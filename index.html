@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cajón — notas privadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#E6E8E1;
+  --ficha:#FBFBF7;
+  --tinta:#15171B;
+  --tinta-suave:#5C6169;
+  --azul:#2B27A6;
+  --marcador:#FFE24D;
+  --linea:#C6CBC1;
+  --alerta:#B3261E;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:var(--papel);
+  background-image:
+    linear-gradient(var(--linea) 1px, transparent 1px),
+    linear-gradient(90deg, var(--linea) 1px, transparent 1px);
+  background-size:28px 28px;
+  background-position:-1px -1px;
+  color:var(--tinta);
+  font-family:"Public Sans",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+/* ---------- piezas comunes ---------- */
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.02em}
+.marca{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;letter-spacing:-.03em;line-height:.95;
+}
+.sello{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--azul);
+  border:1px solid var(--azul);border-radius:99px;padding:2px 9px;
+}
+.btn{
+  border:1px solid var(--tinta);background:var(--tinta);color:#fff;
+  padding:10px 18px;border-radius:var(--r);cursor:pointer;font-weight:500;
+  transition:transform .08s ease, background .15s ease;
+}
+.btn:hover{background:var(--azul);border-color:var(--azul)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-fantasma{background:transparent;color:var(--tinta);border-color:var(--linea)}
+.btn-fantasma:hover{background:transparent;border-color:var(--tinta);color:var(--tinta)}
+.campo{display:block;margin-bottom:14px}
+.campo span{
+  display:block;font-family:"JetBrains Mono",monospace;font-size:11px;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--tinta-suave);margin-bottom:5px;
+}
+.campo input{
+  width:100%;padding:11px 12px;border:1px solid var(--linea);border-radius:var(--r);
+  background:var(--ficha);
+}
+.campo input:focus{border-color:var(--azul)}
+.aviso{
+  margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--alerta);
+  background:#fff;font-size:14px;color:var(--alerta);
+}
+.aviso.ok{border-color:var(--azul);color:var(--azul)}
+.oculto{display:none !important}
+
+/* ---------- puerta (login) ---------- */
+#puerta{min-height:100vh;display:grid;place-items:center;padding:24px}
+.cajon{
+  width:100%;max-width:420px;background:var(--ficha);
+  border:1px solid var(--tinta);border-radius:var(--r);
+  box-shadow:6px 6px 0 rgba(21,23,27,.9);
+  padding:32px;
+}
+.cajon h1{font-size:44px;margin:0 0 6px}
+.cajon .bajada{color:var(--tinta-suave);font-size:14px;margin:0 0 22px}
+.pestanas{display:flex;gap:0;margin-bottom:22px;border-bottom:1px solid var(--linea)}
+.pestanas button{
+  flex:1;background:none;border:0;border-bottom:2px solid transparent;
+  padding:9px 0;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:12px;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--tinta-suave);
+}
+.pestanas button[aria-selected="true"]{color:var(--tinta);border-bottom-color:var(--azul)}
+.nota-pie{margin:16px 0 0;font-size:12.5px;color:var(--tinta-suave)}
+
+/* ---------- escritorio ---------- */
+#escritorio{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
+header.barra{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  border-bottom:1px solid var(--tinta);padding-bottom:14px;margin-bottom:26px;
+}
+header.barra h1{font-size:26px;margin:0}
+.sesion{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sesion .quien{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--tinta-suave)}
+
+.editor{
+  background:var(--ficha);border:1px solid var(--tinta);border-radius:var(--r);
+  padding:18px;margin-bottom:30px;box-shadow:4px 4px 0 rgba(21,23,27,.12);
+}
+.editor input[type=text]{
+  width:100%;border:0;border-bottom:1px solid var(--linea);background:none;
+  padding:4px 0 8px;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:22px;letter-spacing:-.02em;
+}
+.editor textarea{
+  width:100%;min-height:130px;resize:vertical;border:0;background:none;
+  padding:12px 0;line-height:1.7;
+}
+.editor input:focus,.editor textarea:focus{outline:none}
+.editor .pie{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.editor .pista{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--tinta-suave)}
+
+.filtro{width:100%;max-width:280px;padding:8px 10px;border:1px solid var(--linea);border-radius:var(--r);background:var(--ficha)}
+.encabezado-lista{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.encabezado-lista h2{font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--tinta-suave);margin:0;font-weight:500}
+
+.fichas{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.ficha{
+  background:var(--ficha);border:1px solid var(--linea);border-radius:var(--r);
+  padding:0 16px 14px;display:flex;flex-direction:column;
+  animation:entra .28s ease both;
+}
+.ficha::before{content:"";display:block;height:7px;margin:0 -16px 12px;background:var(--marcador);border-bottom:1px solid var(--linea)}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ficha h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;margin:0 0 6px;letter-spacing:-.01em;word-break:break-word}
+.ficha p{margin:0 0 12px;white-space:pre-wrap;word-break:break-word;font-size:14.5px;color:#2A2E34}
+.ficha .meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--tinta-suave)}
+.ficha .acciones{display:flex;gap:4px}
+.ficha .acciones button{
+  background:none;border:1px solid transparent;cursor:pointer;padding:3px 7px;border-radius:var(--r);
+  font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--tinta-suave);
+}
+.ficha .acciones button:hover{border-color:var(--linea);color:var(--tinta)}
+.ficha .acciones .borrar:hover{color:var(--alerta);border-color:var(--alerta)}
+.vacio{background:var(--ficha);border:1px dashed var(--linea);padding:28px;text-align:center;color:var(--tinta-suave);border-radius:var(--r)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+@media (max-width:520px){.cajon{padding:24px}.cajon h1{font-size:36px}}
+</style>
+</head>
+<body>
+
+<!-- ============ PANTALLA 1: entrar / crear cuenta ============ -->
+<section id="puerta">
+  <div class="cajon">
+    <h1 class="marca">Cajón</h1>
+    <p class="bajada">Tus notas, cerradas con tu clave. Nadie más las consulta.</p>
+
+    <div class="pestanas" role="tablist">
+      <button id="tabEntrar" role="tab" aria-selected="true">Entrar</button>
+      <button id="tabCrear" role="tab" aria-selected="false">Crear cuenta</button>
+    </div>
+
+    <div id="avisoAuth" class="aviso oculto"></div>
+
+    <label class="campo"><span>Correo</span>
+      <input id="correo" type="email" autocomplete="email" placeholder="tu@correo.com">
+    </label>
+    <label class="campo"><span>Contraseña</span>
+      <input id="clave" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres">
+    </label>
+
+    <button id="btnAuth" class="btn" style="width:100%">Entrar</button>
+    <p class="nota-pie" id="pieAuth">¿Primera vez? Crea una cuenta con el enlace de arriba.</p>
+  </div>
+</section>
+
+<!-- ============ PANTALLA 2: el bloc ============ -->
+<main id="escritorio" class="oculto">
+  <header class="barra">
+    <div>
+      <h1 class="marca">Cajón</h1>
+      <span class="sello">🔒 solo tú</span>
+    </div>
+    <div class="sesion">
+      <span class="quien" id="quien"></span>
+      <button id="btnSalir" class="btn btn-fantasma">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div id="avisoApp" class="aviso oculto"></div>
+
+  <section class="editor">
+    <input id="titulo" type="text" placeholder="Título de la nota">
+    <textarea id="contenido" placeholder="Escribe aquí…"></textarea>
+    <div class="pie">
+      <span class="pista">Ctrl + Enter para guardar</span>
+      <div style="display:flex;gap:8px">
+        <button id="btnCancelar" class="btn btn-fantasma oculto">Cancelar edición</button>
+        <button id="btnGuardar" class="btn">Guardar nota</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="encabezado-lista">
+    <h2 id="conteo">Cargando…</h2>
+    <input id="filtro" class="filtro" type="search" placeholder="Buscar en mis notas">
+  </div>
+
+  <div id="fichas" class="fichas"></div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+/* ⬇⬇ REEMPLAZA ESTOS DOS VALORES (Supabase → Project Settings → API) ⬇⬇ */
+const SUPABASE_URL = 'https://rbipvhgyhrhmfzhcmoms.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw';
+/* La anon key es pública por diseño: quien protege los datos es el RLS del SQL. */
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = id => document.getElementById(id);
+const puerta = $('puerta'), escritorio = $('escritorio');
+let modo = 'entrar';        // 'entrar' | 'crear'
+let editandoId = null;      // id de la nota en edición
+let notas = [];
+
+/* ---------- avisos ---------- */
+function aviso(el, texto, ok = false){
+  el.textContent = texto;
+  el.classList.toggle('ok', ok);
+  el.classList.toggle('oculto', !texto);
+}
+function traducir(msg = ''){
+  const m = msg.toLowerCase();
+  if (m.includes('invalid login')) return 'Correo o contraseña incorrectos.';
+  if (m.includes('already registered')) return 'Ese correo ya tiene cuenta. Entra con tu contraseña.';
+  if (m.includes('email not confirmed')) return 'Confirma el correo desde el enlace que te enviamos y vuelve a entrar.';
+  if (m.includes('password should be')) return 'La contraseña necesita al menos 6 caracteres.';
+  if (m.includes('rate limit') || m.includes('too many')) return 'Demasiados intentos. Espera un minuto.';
+  return msg || 'Algo falló. Inténtalo de nuevo.';
+}
+
+/* ---------- pestañas ---------- */
+function ponerModo(nuevo){
+  modo = nuevo;
+  const entrar = modo === 'entrar';
+  $('tabEntrar').setAttribute('aria-selected', entrar);
+  $('tabCrear').setAttribute('aria-selected', !entrar);
+  $('btnAuth').textContent = entrar ? 'Entrar' : 'Crear cuenta';
+  $('clave').autocomplete = entrar ? 'current-password' : 'new-password';
+  $('pieAuth').textContent = entrar
+    ? '¿Primera vez? Crea una cuenta con la pestaña de arriba.'
+    : 'Te llega un correo de confirmación si el proyecto lo tiene activado.';
+  aviso($('avisoAuth'), '');
+}
+$('tabEntrar').onclick = () => ponerModo('entrar');
+$('tabCrear').onclick  = () => ponerModo('crear');
+
+/* ---------- autenticación ---------- */
+$('btnAuth').onclick = async () => {
+  const email = $('correo').value.trim();
+  const password = $('clave').value;
+  if (!email || !password) return aviso($('avisoAuth'), 'Escribe correo y contraseña.');
+
+  $('btnAuth').disabled = true;
+  const { data, error } = modo === 'entrar'
+    ? await sb.auth.signInWithPassword({ email, password })
+    : await sb.auth.signUp({ email, password });
+  $('btnAuth').disabled = false;
+
+  if (error) return aviso($('avisoAuth'), traducir(error.message));
+  if (modo === 'crear' && !data.session)
+    return aviso($('avisoAuth'), 'Cuenta creada. Confirma el correo y luego entra.', true);
+  // onAuthStateChange abre el escritorio
+};
+
+$('btnSalir').onclick = async () => { await sb.auth.signOut(); };
+
+sb.auth.onAuthStateChange((_evt, session) => {
+  if (session) abrirEscritorio(session.user); else cerrarEscritorio();
+});
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) abrirEscritorio(data.session.user);
+});
+
+function abrirEscritorio(user){
+  puerta.classList.add('oculto');
+  escritorio.classList.remove('oculto');
+  $('quien').textContent = user.email;
+  $('clave').value = '';
+  cargarNotas();
+}
+function cerrarEscritorio(){
+  escritorio.classList.add('oculto');
+  puerta.classList.remove('oculto');
+  notas = []; editandoId = null;
+  $('fichas').innerHTML = '';
+  limpiarEditor();
+  ponerModo('entrar');
+}
+
+/* ---------- notas ---------- */
+async function cargarNotas(){
+  const { data, error } = await sb
+    .from('notas')
+    .select('id, titulo, contenido, updated_at')
+    .order('updated_at', { ascending: false });
+
+  if (error){ aviso($('avisoApp'), 'No se pudieron cargar las notas: ' + error.message); return; }
+  aviso($('avisoApp'), '');
+  notas = data;
+  pintar();
+}
+
+$('btnGuardar').onclick = guardar;
+$('contenido').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') guardar();
+});
+
+async function guardar(){
+  const titulo = $('titulo').value.trim();
+  const contenido = $('contenido').value.trim();
+  if (!titulo && !contenido) return aviso($('avisoApp'), 'La nota está vacía.');
+
+  $('btnGuardar').disabled = true;
+  const { error } = editandoId
+    ? await sb.from('notas').update({ titulo, contenido }).eq('id', editandoId)
+    : await sb.from('notas').insert({ titulo, contenido });
+  $('btnGuardar').disabled = false;
+
+  if (error) return aviso($('avisoApp'), 'No se guardó: ' + error.message);
+  limpiarEditor();
+  cargarNotas();
+}
+
+function editar(id){
+  const n = notas.find(x => x.id === id);
+  if (!n) return;
+  editandoId = id;
+  $('titulo').value = n.titulo;
+  $('contenido').value = n.contenido;
+  $('btnGuardar').textContent = 'Guardar cambios';
+  $('btnCancelar').classList.remove('oculto');
+  $('titulo').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('btnCancelar').onclick = limpiarEditor;
+
+function limpiarEditor(){
+  editandoId = null;
+  $('titulo').value = '';
+  $('contenido').value = '';
+  $('btnGuardar').textContent = 'Guardar nota';
+  $('btnCancelar').classList.add('oculto');
+}
+
+async function borrar(id){
+  if (!confirm('¿Borrar esta nota? No se puede deshacer.')) return;
+  const { error } = await sb.from('notas').delete().eq('id', id);
+  if (error) return aviso($('avisoApp'), 'No se borró: ' + error.message);
+  if (editandoId === id) limpiarEditor();
+  cargarNotas();
+}
+
+/* ---------- render ---------- */
+$('filtro').addEventListener('input', pintar);
+
+function pintar(){
+  const q = $('filtro').value.trim().toLowerCase();
+  const lista = q
+    ? notas.filter(n => (n.titulo + ' ' + n.contenido).toLowerCase().includes(q))
+    : notas;
+
+  $('conteo').textContent = notas.length === 0
+    ? 'Sin notas todavía'
+    : `${lista.length} de ${notas.length} nota${notas.length === 1 ? '' : 's'}`;
+
+  const cont = $('fichas');
+  cont.innerHTML = '';
+
+  if (lista.length === 0){
+    const vacio = document.createElement('div');
+    vacio.className = 'vacio';
+    vacio.textContent = notas.length === 0
+      ? 'Escribe tu primera nota arriba. Solo tú vas a poder leerla.'
+      : 'Ninguna nota coincide con esa búsqueda.';
+    cont.appendChild(vacio);
+    return;
+  }
+
+  lista.forEach((n, i) => {
+    const ficha = document.createElement('article');
+    ficha.className = 'ficha';
+    ficha.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = n.titulo || 'Sin título';
+
+    const p = document.createElement('p');
+    p.textContent = n.contenido;
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+
+    const fecha = document.createElement('span');
+    fecha.className = 'mono';
+    fecha.textContent = new Date(n.updated_at).toLocaleString('es', {
+      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+    });
+
+    const acciones = document.createElement('div');
+    acciones.className = 'acciones';
+    const bEdit = document.createElement('button');
+    bEdit.textContent = 'editar';
+    bEdit.onclick = () => editar(n.id);
+    const bDel = document.createElement('button');
+    bDel.className = 'borrar';
+    bDel.textContent = 'borrar';
+    bDel.onclick = () => borrar(n.id);
+    acciones.append(bEdit, bDel);
+
+    meta.append(fecha, acciones);
+    ficha.append(h3, p, meta);
+    cont.appendChild(ficha);
+  });
+}
+</script>
+</body>
+</html>
