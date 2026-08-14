@@ -130,24 +130,108 @@ header.barra h1{font-size:26px;margin:0}
 .ficha{
   background:var(--ficha);border:1px solid var(--linea);border-radius:var(--r);
   padding:0 16px 14px;display:flex;flex-direction:column;
-  animation:entra .28s ease both;
+  animation:entra .28s ease both;position:relative;
+  min-height:200px;cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
 }
+.ficha:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
 .ficha::before{content:"";display:block;height:7px;margin:0 -16px 12px;background:var(--marcador);border-bottom:1px solid var(--linea)}
 @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.ficha h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;margin:0 0 6px;letter-spacing:-.01em;word-break:break-word}
-.ficha p{margin:0 0 12px;white-space:pre-wrap;word-break:break-word;font-size:14.5px;color:#2A2E34}
+.ficha h3{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;
+  margin:0 0 6px;letter-spacing:-.01em;word-break:break-word;
+}
+.ficha p{
+  margin:0 0 12px;white-space:pre-wrap;word-break:break-word;font-size:14.5px;
+  color:#2A2E34;flex:1;
+  display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;
+}
 .ficha .meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--tinta-suave)}
-.ficha .acciones{display:flex;gap:4px}
+.ficha .acciones{display:flex;gap:4px;flex-wrap:wrap}
 .ficha .acciones button{
   background:none;border:1px solid transparent;cursor:pointer;padding:3px 7px;border-radius:var(--r);
   font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--tinta-suave);
 }
 .ficha .acciones button:hover{border-color:var(--linea);color:var(--tinta)}
 .ficha .acciones .borrar:hover{color:var(--alerta);border-color:var(--alerta)}
+.ficha .acciones .copiar:hover{color:var(--azul);border-color:var(--azul)}
+.ficha .acciones .copiado{color:var(--azul);border-color:var(--azul)}
+
+/* Estilos para links */
+.enlace-nota{color:var(--azul);text-decoration:underline;cursor:pointer}
+.enlace-nota:hover{color:#1a1670}
 .vacio{background:var(--ficha);border:1px dashed var(--linea);padding:28px;text-align:center;color:var(--tinta-suave);border-radius:var(--r)}
 
+/* ---------- MODAL ---------- */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.7);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal{
+  background:var(--ficha);border:1px solid var(--tinta);border-radius:8px;
+  width:100%;max-width:700px;max-height:90vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+  animation:slideUp .3s ease;
+}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+
+.modal-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-bottom:1px solid var(--linea);
+}
+.modal-header h2{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:20px;margin:0;letter-spacing:-.01em;
+}
+.modal-close{
+  background:none;border:1px solid var(--linea);border-radius:var(--r);
+  width:32px;height:32px;cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--tinta-suave);transition:all .15s ease;
+}
+.modal-close:hover{background:var(--alerta);color:#fff;border-color:var(--alerta)}
+
+.modal-body{
+  padding:20px;overflow-y:auto;flex:1;
+}
+.modal-body input[type=text]{
+  width:100%;border:1px solid var(--linea);border-radius:var(--r);
+  padding:10px;margin-bottom:15px;font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:700;font-size:18px;background:#fff;
+}
+.modal-body textarea{
+  width:100%;min-height:600px;resize:vertical;border:1px solid var(--linea);
+  border-radius:var(--r);padding:10px;font:inherit;font-size:14.5px;
+  line-height:1.55;background:#fff;flex:1;
+}
+.modal-footer{
+  display:flex;justify-content:flex-end;gap:8px;
+  padding:16px 20px;border-top:1px solid var(--linea);
+}
+.modal-content-view{
+  white-space:pre-wrap;word-break:break-word;font-size:15px;
+  line-height:1.7;color:#2A2E34;min-height:300px;
+}
+
+/* Toast para notificaciones */
+.toast{
+  position:fixed;bottom:20px;right:20px;background:var(--tinta);color:#fff;
+  padding:12px 20px;border-radius:var(--r);font-size:14px;z-index:1001;
+  animation:toastIn .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
-@media (max-width:520px){.cajon{padding:24px}.cajon h1{font-size:36px}}
+@media (max-width:520px){
+  .cajon{padding:24px}.cajon h1{font-size:36px}
+  .modal{max-width:100%;max-height:95vh}
+  .modal-body textarea{min-height:200px}
+}
 </style>
 </head>
 <body>
@@ -212,6 +296,22 @@ header.barra h1{font-size:26px;margin:0}
   <div id="fichas" class="fichas"></div>
 </main>
 
+<!-- ============ MODAL PARA VER/EDITAR NOTA ============ -->
+<div id="modalNota" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitulo">Nota</h2>
+      <button class="modal-close" id="modalCerrar" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Aquí se inserta el contenido dinámicamente -->
+    </div>
+    <div class="modal-footer" id="modalFooter">
+      <!-- Aquí se insertan los botones dinámicamente -->
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -227,6 +327,8 @@ const puerta = $('puerta'), escritorio = $('escritorio');
 let modo = 'entrar';        // 'entrar' | 'crear'
 let editandoId = null;      // id de la nota en edición
 let notas = [];
+let notaEnModal = null;     // nota que se está viendo/editando en el modal
+let modalEditando = false;  // si el modal está en modo edición
 
 /* ---------- avisos ---------- */
 function aviso(el, texto, ok = false){
@@ -234,6 +336,15 @@ function aviso(el, texto, ok = false){
   el.classList.toggle('ok', ok);
   el.classList.toggle('oculto', !texto);
 }
+
+function mostrarToast(mensaje){
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = mensaje;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2000);
+}
+
 function traducir(msg = ''){
   const m = msg.toLowerCase();
   if (m.includes('invalid login')) return 'Correo o contraseña incorrectos.';
@@ -301,6 +412,7 @@ function cerrarEscritorio(){
   $('fichas').innerHTML = '';
   limpiarEditor();
   ponerModo('entrar');
+  cerrarModal();
 }
 
 /* ---------- notas ---------- */
@@ -335,6 +447,7 @@ async function guardar(){
   if (error) return aviso($('avisoApp'), 'No se guardó: ' + error.message);
   limpiarEditor();
   cargarNotas();
+  mostrarToast('Nota guardada correctamente');
 }
 
 function editar(id){
@@ -364,7 +477,178 @@ async function borrar(id){
   if (error) return aviso($('avisoApp'), 'No se borró: ' + error.message);
   if (editandoId === id) limpiarEditor();
   cargarNotas();
+  mostrarToast('Nota eliminada');
 }
+
+/* ---------- Función para copiar contenido ---------- */
+async function copiarContenido(id){
+  const nota = notas.find(n => n.id === id);
+  if (!nota || !nota.contenido) {
+    mostrarToast('No hay contenido para copiar');
+    return;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(nota.contenido);
+    mostrarToast('Contenido copiado al portapapeles');
+    
+    // Cambiar temporalmente el botón a "copiado"
+    const boton = document.querySelector(`[data-copiar-id="${id}"]`);
+    if (boton) {
+      const textoOriginal = boton.textContent;
+      boton.textContent = '✓ copiado';
+      boton.classList.add('copiado');
+      setTimeout(() => {
+        boton.textContent = textoOriginal;
+        boton.classList.remove('copiado');
+      }, 2000);
+    }
+  } catch (err) {
+    mostrarToast('No se pudo copiar el contenido');
+  }
+}
+
+/* ---------- Función para convertir texto con URLs en HTML con enlaces clickeables ---------- */
+function formatearTextoConLinks(texto) {
+  const regexUrl = /(\b(https?|ftp):\/\/[^\s<]+[^<.,:;"')\]\s])|(\bwww\.[^\s<]+[^<.,:;"')\]\s])/gi;
+  
+  return texto.replace(regexUrl, (url) => {
+    let href = url;
+    if (!/^https?:\/\//i.test(url)) {
+      href = 'https://' + url;
+    }
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="enlace-nota">${url}</a>`;
+  });
+}
+
+/* ---------- MODAL ---------- */
+function abrirModal(id) {
+  const nota = notas.find(n => n.id === id);
+  if (!nota) return;
+  
+  notaEnModal = nota;
+  modalEditando = false;
+  $('modalTitulo').textContent = nota.titulo || 'Sin título';
+  
+  // Modo visualización
+  const body = $('modalBody');
+  body.innerHTML = `
+    <div class="modal-content-view" id="modalContenidoView">
+      ${formatearTextoConLinks(nota.contenido || '')}
+    </div>
+  `;
+  
+  const footer = $('modalFooter');
+  footer.innerHTML = `
+    <button class="btn btn-fantasma" id="modalBtnCopiar">Copiar contenido</button>
+    <button class="btn btn-fantasma" id="modalBtnEditar">Editar</button>
+    <button class="btn btn-fantasma" id="modalBtnBorrar" style="color:var(--alerta);border-color:var(--alerta)">Borrar</button>
+    <button class="btn" id="modalBtnCerrar">Cerrar</button>
+  `;
+  
+  // Event listeners
+  document.getElementById('modalBtnCopiar').onclick = () => {
+    copiarContenido(nota.id);
+    cerrarModal();
+  };
+  
+  document.getElementById('modalBtnEditar').onclick = () => {
+    activarEdicionModal(nota);
+  };
+  
+  document.getElementById('modalBtnBorrar').onclick = () => {
+    if (confirm('¿Borrar esta nota? No se puede deshacer.')) {
+      borrar(nota.id);
+      cerrarModal();
+    }
+  };
+  
+  document.getElementById('modalBtnCerrar').onclick = cerrarModal;
+  
+  $('modalNota').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+}
+
+function activarEdicionModal(nota) {
+  modalEditando = true;
+  $('modalTitulo').textContent = 'Editando: ' + (nota.titulo || 'Sin título');
+  
+  const body = $('modalBody');
+  body.innerHTML = `
+    <input type="text" id="modalInputTitulo" value="${nota.titulo || ''}" placeholder="Título de la nota">
+    <textarea id="modalTextareaContenido" placeholder="Escribe aquí…">${nota.contenido || ''}</textarea>
+  `;
+  
+  const footer = $('modalFooter');
+  footer.innerHTML = `
+    <button class="btn btn-fantasma" id="modalBtnCancelar">Cancelar</button>
+    <button class="btn" id="modalBtnGuardar">Guardar cambios</button>
+  `;
+  
+  document.getElementById('modalBtnCancelar').onclick = () => {
+    abrirModal(nota.id);
+  };
+  
+  document.getElementById('modalBtnGuardar').onclick = async () => {
+    const nuevoTitulo = document.getElementById('modalInputTitulo').value.trim();
+    const nuevoContenido = document.getElementById('modalTextareaContenido').value.trim();
+    
+    if (!nuevoTitulo && !nuevoContenido) {
+      mostrarToast('La nota está vacía');
+      return;
+    }
+    
+    const { error } = await sb.from('notas')
+      .update({ titulo: nuevoTitulo, contenido: nuevoContenido })
+      .eq('id', nota.id);
+    
+    if (error) {
+      mostrarToast('No se pudo guardar: ' + error.message);
+      return;
+    }
+    
+    mostrarToast('Nota actualizada correctamente');
+    cerrarModal();
+    cargarNotas();
+  };
+  
+  // Focus en el textarea
+  setTimeout(() => {
+    const textarea = document.getElementById('modalTextareaContenido');
+    if (textarea) textarea.focus();
+  }, 100);
+  
+  // Ctrl+Enter para guardar
+  document.getElementById('modalTextareaContenido').addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('modalBtnGuardar').click();
+    }
+  });
+}
+
+function cerrarModal() {
+  $('modalNota').classList.add('oculto');
+  document.body.style.overflow = '';
+  notaEnModal = null;
+  modalEditando = false;
+}
+
+// Cerrar modal con click en overlay
+$('modalNota').addEventListener('click', (e) => {
+  if (e.target === $('modalNota')) {
+    cerrarModal();
+  }
+});
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('modalNota').classList.contains('oculto')) {
+    cerrarModal();
+  }
+});
+
+$('modalCerrar').onclick = cerrarModal;
 
 /* ---------- render ---------- */
 $('filtro').addEventListener('input', pintar);
@@ -396,12 +680,27 @@ function pintar(){
     const ficha = document.createElement('article');
     ficha.className = 'ficha';
     ficha.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+    ficha.setAttribute('data-nota-id', n.id);
+    
+    // Click en la ficha abre el modal
+    ficha.onclick = (e) => {
+      // No abrir si se hizo click en un botón de acción
+      if (e.target.closest('.acciones') || e.target.closest('.enlace-nota')) return;
+      abrirModal(n.id);
+    };
 
     const h3 = document.createElement('h3');
     h3.textContent = n.titulo || 'Sin título';
 
     const p = document.createElement('p');
-    p.textContent = n.contenido;
+    p.innerHTML = formatearTextoConLinks(n.contenido);
+    
+    // Prevenir que los links abran el modal
+    p.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
 
     const meta = document.createElement('div');
     meta.className = 'meta';
@@ -414,15 +713,27 @@ function pintar(){
 
     const acciones = document.createElement('div');
     acciones.className = 'acciones';
-    const bEdit = document.createElement('button');
-    bEdit.textContent = 'editar';
-    bEdit.onclick = () => editar(n.id);
+    
+    // Botón de copiar
+    const bCopiar = document.createElement('button');
+    bCopiar.className = 'copiar';
+    bCopiar.textContent = 'copiar';
+    bCopiar.setAttribute('data-copiar-id', n.id);
+    bCopiar.title = 'Copiar contenido de la nota';
+    bCopiar.onclick = (e) => {
+      e.stopPropagation();
+      copiarContenido(n.id);
+    };
+    
     const bDel = document.createElement('button');
     bDel.className = 'borrar';
     bDel.textContent = 'borrar';
-    bDel.onclick = () => borrar(n.id);
-    acciones.append(bEdit, bDel);
-
+    bDel.onclick = (e) => {
+      e.stopPropagation();
+      borrar(n.id);
+    };
+    
+    acciones.append(bCopiar, bDel);
     meta.append(fecha, acciones);
     ficha.append(h3, p, meta);
     cont.appendChild(ficha);
