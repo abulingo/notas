@@ -34,7 +34,7 @@ body{
   font-size:16px;
   line-height:1.55;
 }
-button,input,textarea{font:inherit;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--azul);outline-offset:2px}
 
 /* ---------- piezas comunes ---------- */
@@ -59,16 +59,17 @@ button,input,textarea{font:inherit;color:inherit}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn-fantasma{background:transparent;color:var(--tinta);border-color:var(--linea)}
 .btn-fantasma:hover{background:transparent;border-color:var(--tinta);color:var(--tinta)}
+.btn-chico{padding:6px 12px;font-size:13px}
 .campo{display:block;margin-bottom:14px}
 .campo span{
   display:block;font-family:"JetBrains Mono",monospace;font-size:11px;
   text-transform:uppercase;letter-spacing:.1em;color:var(--tinta-suave);margin-bottom:5px;
 }
-.campo input{
+.campo input,.campo select{
   width:100%;padding:11px 12px;border:1px solid var(--linea);border-radius:var(--r);
   background:var(--ficha);
 }
-.campo input:focus{border-color:var(--azul)}
+.campo input:focus,.campo select:focus{border-color:var(--azul)}
 .aviso{
   margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--alerta);
   background:#fff;font-size:14px;color:var(--alerta);
@@ -104,6 +105,15 @@ header.barra{
 header.barra h1{font-size:26px;margin:0}
 .sesion{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .sesion .quien{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--tinta-suave)}
+
+.herramientas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.tarjeta-herramienta{
+  flex:1;min-width:220px;background:var(--ficha);border:1px solid var(--tinta);
+  border-radius:var(--r);padding:16px;box-shadow:4px 4px 0 rgba(21,23,27,.12);
+  display:flex;flex-direction:column;gap:8px;
+}
+.tarjeta-herramienta h3{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700}
+.tarjeta-herramienta p{margin:0;font-size:13px;color:var(--tinta-suave);flex:1}
 
 .editor{
   background:var(--ficha);border:1px solid var(--tinta);border-radius:var(--r);
@@ -157,6 +167,17 @@ header.barra h1{font-size:26px;margin:0}
 .ficha .acciones .copiar:hover{color:var(--azul);border-color:var(--azul)}
 .ficha .acciones .copiado{color:var(--azul);border-color:var(--azul)}
 
+/* fichas de cálculos guardados (comisiones) */
+.ficha-calculo{background:var(--ficha);border:1px solid var(--linea);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:6px;animation:entra .28s ease both}
+.ficha-calculo .cab{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ficha-calculo .cab strong{font-family:"Bricolage Grotesque",sans-serif;font-size:16px}
+.ficha-calculo .cab span.broker{font-family:"JetBrains Mono",monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--azul);border:1px solid var(--azul);border-radius:99px;padding:1px 7px}
+.ficha-calculo .fila{display:flex;justify-content:space-between;font-size:13.5px;color:#2A2E34}
+.ficha-calculo .fila span:first-child{color:var(--tinta-suave)}
+.ficha-calculo .ganancia.positiva{color:#1a7a3c;font-weight:700}
+.ficha-calculo .ganancia.negativa{color:var(--alerta);font-weight:700}
+.ficha-calculo .acciones{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}
+
 /* Estilos para links */
 .enlace-nota{color:var(--azul);text-decoration:underline;cursor:pointer}
 .enlace-nota:hover{color:#1a1670}
@@ -178,6 +199,7 @@ header.barra h1{font-size:26px;margin:0}
   box-shadow:0 10px 30px rgba(0,0,0,.3);
   animation:slideUp .3s ease;
 }
+.modal.modal-angosto{max-width:480px}
 @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 
 .modal-header{
@@ -218,6 +240,37 @@ header.barra h1{font-size:26px;margin:0}
   line-height:1.7;color:#2A2E34;min-height:300px;
 }
 
+/* --- formularios de las calculadoras --- */
+.grupo-form{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grupo-form .campo.ancho{grid-column:1 / -1}
+.subtitulo-calc{
+  font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--tinta-suave);margin:18px 0 10px;
+  padding-top:12px;border-top:1px solid var(--linea);
+}
+.subtitulo-calc:first-child{margin-top:0;padding-top:0;border-top:0}
+.resultado-calc{
+  background:#fff;border:1px solid var(--tinta);border-radius:var(--r);
+  padding:14px 16px;margin-top:8px;
+}
+.resultado-calc .fila{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.resultado-calc .fila.total{border-top:1px dashed var(--linea);margin-top:6px;padding-top:10px;font-weight:700;font-size:15.5px}
+.resultado-calc .fila span:first-child{color:var(--tinta-suave)}
+.resultado-calc .fila.total .valor-positivo{color:#1a7a3c}
+.resultado-calc .fila.total .valor-negativo{color:var(--alerta)}
+.pestanas-broker{display:flex;gap:8px;margin-bottom:16px}
+.pestanas-broker button{
+  flex:1;padding:9px 0;border:1px solid var(--linea);background:#fff;border-radius:var(--r);
+  cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--tinta-suave);
+}
+.pestanas-broker button[aria-selected="true"]{border-color:var(--azul);color:var(--azul);background:#eeeefc}
+.lista-guardados{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.lista-guardados h4{
+  font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--tinta-suave);margin:0 0 4px;
+}
+
 /* Toast para notificaciones */
 .toast{
   position:fixed;bottom:20px;right:20px;background:var(--tinta);color:#fff;
@@ -231,6 +284,7 @@ header.barra h1{font-size:26px;margin:0}
   .cajon{padding:24px}.cajon h1{font-size:36px}
   .modal{max-width:100%;max-height:95vh}
   .modal-body textarea{min-height:200px}
+  .grupo-form{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -276,6 +330,20 @@ header.barra h1{font-size:26px;margin:0}
 
   <div id="avisoApp" class="aviso oculto"></div>
 
+  <!-- ---- accesos a las calculadoras ---- -->
+  <div class="herramientas">
+    <div class="tarjeta-herramienta">
+      <h3>📈 Comisiones TRII / IBKR</h3>
+      <p>Calcula ganancia neta y comisiones de compra/venta de una acción, y guarda tus cálculos.</p>
+      <button id="btnAbrirCalcComisiones" class="btn btn-chico" style="align-self:flex-start">Abrir calculadora</button>
+    </div>
+    <div class="tarjeta-herramienta">
+      <h3>➖ Descuento del 14%</h3>
+      <p>Calcula el valor de un monto después de descontarle un 14%.</p>
+      <button id="btnAbrirCalcDescuento" class="btn btn-chico" style="align-self:flex-start">Abrir calculadora</button>
+    </div>
+  </div>
+
   <section class="editor">
     <input id="titulo" type="text" placeholder="Título de la nota">
     <textarea id="contenido" placeholder="Escribe aquí…"></textarea>
@@ -308,6 +376,91 @@ header.barra h1{font-size:26px;margin:0}
     </div>
     <div class="modal-footer" id="modalFooter">
       <!-- Aquí se insertan los botones dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CALCULADORA TRII / IBKR ============ -->
+<div id="modalCalcComisiones" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Comisiones TRII / IBKR</h2>
+      <button class="modal-close" id="cerrarCalcComisiones" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="pestanas-broker">
+        <button id="btnBrokerTrii" aria-selected="true">TRII (COP)</button>
+        <button id="btnBrokerIbkr" aria-selected="false">IBKR (USD)</button>
+      </div>
+
+      <div id="avisoCalcComisiones" class="aviso oculto"></div>
+
+      <label class="campo ancho"><span>Nombre del activo (opcional)</span>
+        <input id="ccActivo" type="text" placeholder="Ej: AAPLCO, ECOPETROL, TSLA…">
+      </label>
+
+      <div class="subtitulo-calc">Compra</div>
+      <div class="grupo-form">
+        <label class="campo"><span id="lblPrecioCompra">Precio de compra (COP)</span>
+          <input id="ccPrecioCompra" type="number" step="any" min="0" placeholder="0">
+        </label>
+        <label class="campo"><span>Cantidad de acciones</span>
+          <input id="ccCantidad" type="number" step="any" min="0" placeholder="0">
+        </label>
+      </div>
+
+      <div class="subtitulo-calc">Venta</div>
+      <div class="grupo-form">
+        <label class="campo"><span id="lblPrecioVenta">Precio de venta (COP)</span>
+          <input id="ccPrecioVenta" type="number" step="any" min="0" placeholder="0">
+        </label>
+        <label class="campo" id="campoCantidadVentaWrap"><span>Cantidad vendida</span>
+          <input id="ccCantidadVenta" type="number" step="any" min="0" placeholder="igual a la comprada">
+        </label>
+      </div>
+
+      <div id="bloqueIbkrExtra" class="oculto">
+        <div class="subtitulo-calc">Conversión (opcional)</div>
+        <div class="grupo-form">
+          <label class="campo ancho"><span>TRM — valor de 1 USD en COP (opcional)</span>
+            <input id="ccTrm" type="number" step="any" min="0" placeholder="Ej: 4050">
+          </label>
+        </div>
+      </div>
+
+      <button id="btnCalcularComisiones" class="btn" style="width:100%;margin-top:4px">Calcular</button>
+
+      <div id="resultadoCalcComisiones" class="resultado-calc oculto"></div>
+
+      <div class="lista-guardados">
+        <h4 id="tituloGuardados">Cálculos guardados</h4>
+        <div id="listaCalculosGuardados"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-fantasma" id="ccBtnLimpiar">Limpiar</button>
+      <button class="btn" id="ccBtnGuardar" disabled>Guardar cálculo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CALCULADORA DESCUENTO 14% ============ -->
+<div id="modalCalcDescuento" class="modal-overlay oculto">
+  <div class="modal modal-angosto">
+    <div class="modal-header">
+      <h2>Descuento del 14%</h2>
+      <button class="modal-close" id="cerrarCalcDescuento" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="campo ancho"><span>Valor original</span>
+        <input id="cdValor" type="number" step="any" min="0" placeholder="0">
+      </label>
+      <button id="btnCalcularDescuento" class="btn" style="width:100%">Calcular</button>
+      <div id="resultadoCalcDescuento" class="resultado-calc oculto"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-fantasma" id="cdBtnLimpiar">Limpiar</button>
     </div>
   </div>
 </div>
@@ -413,6 +566,8 @@ function cerrarEscritorio(){
   limpiarEditor();
   ponerModo('entrar');
   cerrarModal();
+  cerrarCalcComisiones();
+  cerrarCalcDescuento();
 }
 
 /* ---------- notas ---------- */
@@ -643,8 +798,10 @@ $('modalNota').addEventListener('click', (e) => {
 
 // Cerrar modal con Escape
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !$('modalNota').classList.contains('oculto')) {
-    cerrarModal();
+  if (e.key === 'Escape') {
+    if (!$('modalNota').classList.contains('oculto')) cerrarModal();
+    if (!$('modalCalcComisiones').classList.contains('oculto')) cerrarCalcComisiones();
+    if (!$('modalCalcDescuento').classList.contains('oculto')) cerrarCalcDescuento();
   }
 });
 
@@ -739,6 +896,292 @@ function pintar(){
     cont.appendChild(ficha);
   });
 }
+
+/* =========================================================================
+   ================  CALCULADORA DE COMISIONES TRII / IBKR  ================
+   ========================================================================= */
+
+const fmtCOP = n => '$' + Math.round(n).toLocaleString('es-CO');
+const fmtUSD = n => 'US$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+let brokerActivo = 'trii';   // 'trii' | 'ibkr'
+let calculosGuardados = [];
+let calculoEditandoId = null;
+let ultimoResultado = null;   // guarda el último cálculo hecho, listo para insertar/actualizar
+
+function abrirCalcComisiones(){
+  $('modalCalcComisiones').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+  cargarCalculosGuardados();
+}
+function cerrarCalcComisiones(){
+  $('modalCalcComisiones').classList.add('oculto');
+  document.body.style.overflow = '';
+}
+$('btnAbrirCalcComisiones').onclick = abrirCalcComisiones;
+$('cerrarCalcComisiones').onclick = cerrarCalcComisiones;
+$('modalCalcComisiones').addEventListener('click', e => { if (e.target === $('modalCalcComisiones')) cerrarCalcComisiones(); });
+
+function ponerBroker(b){
+  brokerActivo = b;
+  $('btnBrokerTrii').setAttribute('aria-selected', b === 'trii');
+  $('btnBrokerIbkr').setAttribute('aria-selected', b === 'ibkr');
+  $('lblPrecioCompra').textContent = b === 'trii' ? 'Precio de compra (COP)' : 'Precio de compra (USD)';
+  $('lblPrecioVenta').textContent  = b === 'trii' ? 'Precio de venta (COP)'  : 'Precio de venta (USD)';
+  $('bloqueIbkrExtra').classList.toggle('oculto', b !== 'ibkr');
+  $('resultadoCalcComisiones').classList.add('oculto');
+  $('ccBtnGuardar').disabled = true;
+  ultimoResultado = null;
+}
+$('btnBrokerTrii').onclick = () => ponerBroker('trii');
+$('btnBrokerIbkr').onclick = () => ponerBroker('ibkr');
+
+/* --- reglas de comisión ---
+   TRII: $14.875 COP (IVA incluido) por operación de compra o venta cuyo valor sea <= $5.000.000 COP.
+   Si el valor de la operación supera $5.000.000 COP: 0,25% + IVA (19%) sobre el valor de la operación.
+   IBKR (Pro, tarifa fija): US$0,005 por acción, mínimo US$1 por orden, máximo 1% del valor negociado. */
+function comisionTrii(valorOperacionCOP){
+  if (valorOperacionCOP <= 0) return 0;
+  if (valorOperacionCOP <= 5000000) return 14875;
+  return valorOperacionCOP * 0.0025 * 1.19;
+}
+function comisionIbkr(cantidad, precioUSD){
+  if (cantidad <= 0 || precioUSD <= 0) return 0;
+  const valorOperacion = cantidad * precioUSD;
+  const porAccion = cantidad * 0.005;
+  const tope = valorOperacion * 0.01;
+  return Math.max(1, Math.min(porAccion, tope));
+}
+
+function calcular(){
+  const activo = $('ccActivo').value.trim();
+  const precioCompra = parseFloat($('ccPrecioCompra').value) || 0;
+  const cantidad = parseFloat($('ccCantidad').value) || 0;
+  const precioVenta = parseFloat($('ccPrecioVenta').value) || 0;
+  const cantidadVentaInput = $('ccCantidadVenta').value.trim();
+  const cantidadVenta = cantidadVentaInput ? (parseFloat(cantidadVentaInput) || 0) : cantidad;
+
+  if (cantidad <= 0 || precioCompra <= 0){
+    aviso($('avisoCalcComisiones'), 'Escribe al menos la cantidad y el precio de compra.');
+    return;
+  }
+  aviso($('avisoCalcComisiones'), '');
+
+  const valorCompra = cantidad * precioCompra;
+  const valorVenta = cantidadVenta * precioVenta;
+
+  let comisionCompra, comisionVenta, moneda, simbolo;
+  if (brokerActivo === 'trii'){
+    comisionCompra = comisionTrii(valorCompra);
+    comisionVenta = precioVenta > 0 ? comisionTrii(valorVenta) : 0;
+    moneda = 'COP'; simbolo = fmtCOP;
+  } else {
+    comisionCompra = comisionIbkr(cantidad, precioCompra);
+    comisionVenta = precioVenta > 0 ? comisionIbkr(cantidadVenta, precioVenta) : 0;
+    moneda = 'USD'; simbolo = fmtUSD;
+  }
+
+  const totalComisiones = comisionCompra + comisionVenta;
+  const gananciaBruta = valorVenta - valorCompra;
+  const gananciaNeta = gananciaBruta - totalComisiones;
+
+  const trm = parseFloat($('ccTrm').value) || 0;
+  const gananciaNetaCOP = (brokerActivo === 'ibkr' && trm > 0) ? gananciaNeta * trm : null;
+
+  ultimoResultado = {
+    activo, broker: brokerActivo, moneda,
+    cantidad, precio_compra: precioCompra,
+    cantidad_venta: cantidadVenta, precio_venta: precioVenta,
+    comision_compra: comisionCompra, comision_venta: comisionVenta,
+    ganancia_bruta: gananciaBruta, ganancia_neta: gananciaNeta,
+    trm: trm > 0 ? trm : null
+  };
+
+  const filas = [];
+  filas.push(`<div class="fila"><span>Valor de compra</span><span>${simbolo(valorCompra)}</span></div>`);
+  filas.push(`<div class="fila"><span>Comisión de compra</span><span>${simbolo(comisionCompra)}</span></div>`);
+  if (precioVenta > 0){
+    filas.push(`<div class="fila"><span>Valor de venta</span><span>${simbolo(valorVenta)}</span></div>`);
+    filas.push(`<div class="fila"><span>Comisión de venta</span><span>${simbolo(comisionVenta)}</span></div>`);
+    filas.push(`<div class="fila"><span>Total comisiones</span><span>${simbolo(totalComisiones)}</span></div>`);
+    filas.push(`<div class="fila"><span>Ganancia bruta</span><span>${simbolo(gananciaBruta)}</span></div>`);
+    const claseGanancia = gananciaNeta >= 0 ? 'valor-positivo' : 'valor-negativo';
+    filas.push(`<div class="fila total"><span>Ganancia neta</span><span class="${claseGanancia}">${simbolo(gananciaNeta)}</span></div>`);
+    if (gananciaNetaCOP !== null){
+      const claseCOP = gananciaNetaCOP >= 0 ? 'valor-positivo' : 'valor-negativo';
+      filas.push(`<div class="fila"><span>Ganancia neta en COP (TRM ${trm.toLocaleString('es-CO')})</span><span class="${claseCOP}">${fmtCOP(gananciaNetaCOP)}</span></div>`);
+    }
+  } else {
+    filas.push(`<div class="fila total"><span>Solo compra — sin precio de venta</span><span></span></div>`);
+  }
+
+  const resDiv = $('resultadoCalcComisiones');
+  resDiv.innerHTML = filas.join('');
+  resDiv.classList.remove('oculto');
+  $('ccBtnGuardar').disabled = false;
+}
+$('btnCalcularComisiones').onclick = calcular;
+
+function limpiarCalcComisiones(){
+  $('ccActivo').value = '';
+  $('ccPrecioCompra').value = '';
+  $('ccCantidad').value = '';
+  $('ccPrecioVenta').value = '';
+  $('ccCantidadVenta').value = '';
+  $('ccTrm').value = '';
+  $('resultadoCalcComisiones').classList.add('oculto');
+  $('ccBtnGuardar').disabled = true;
+  $('ccBtnGuardar').textContent = 'Guardar cálculo';
+  ultimoResultado = null;
+  calculoEditandoId = null;
+  aviso($('avisoCalcComisiones'), '');
+}
+$('ccBtnLimpiar').onclick = limpiarCalcComisiones;
+
+/* --- guardar / cargar / editar / borrar en Supabase (tabla: calculos_comisiones) --- */
+async function cargarCalculosGuardados(){
+  const { data, error } = await sb
+    .from('calculos_comisiones')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error){
+    aviso($('avisoCalcComisiones'), 'No se pudieron cargar tus cálculos guardados: ' + error.message);
+    calculosGuardados = [];
+  } else {
+    calculosGuardados = data;
+  }
+  pintarCalculosGuardados();
+}
+
+function pintarCalculosGuardados(){
+  $('tituloGuardados').textContent = `Cálculos guardados (${calculosGuardados.length})`;
+  const cont = $('listaCalculosGuardados');
+  cont.innerHTML = '';
+
+  if (calculosGuardados.length === 0){
+    const vacio = document.createElement('div');
+    vacio.className = 'vacio';
+    vacio.textContent = 'Todavía no has guardado ningún cálculo.';
+    cont.appendChild(vacio);
+    return;
+  }
+
+  calculosGuardados.forEach(c => {
+    const simbolo = c.moneda === 'USD' ? fmtUSD : fmtCOP;
+    const div = document.createElement('div');
+    div.className = 'ficha-calculo';
+    const claseGan = c.ganancia_neta >= 0 ? 'positiva' : 'negativa';
+    div.innerHTML = `
+      <div class="cab">
+        <strong>${c.activo || 'Sin nombre'}</strong>
+        <span class="broker">${c.broker.toUpperCase()}</span>
+      </div>
+      <div class="fila"><span>Cantidad</span><span>${c.cantidad}</span></div>
+      <div class="fila"><span>Compra</span><span>${simbolo(c.precio_compra)}</span></div>
+      <div class="fila"><span>Venta</span><span>${c.precio_venta ? simbolo(c.precio_venta) : '—'}</span></div>
+      <div class="fila"><span>Comisiones</span><span>${simbolo(c.comision_compra + c.comision_venta)}</span></div>
+      <div class="fila ganancia ${claseGan}"><span>Ganancia neta</span><span>${simbolo(c.ganancia_neta)}</span></div>
+      <div class="acciones">
+        <button class="btn btn-fantasma btn-chico" data-editar="${c.id}">Editar</button>
+        <button class="btn btn-fantasma btn-chico" data-borrar="${c.id}" style="color:var(--alerta);border-color:var(--alerta)">Borrar</button>
+      </div>
+    `;
+    div.querySelector('[data-editar]').onclick = () => cargarCalculoParaEditar(c);
+    div.querySelector('[data-borrar]').onclick = () => borrarCalculoGuardado(c.id);
+    cont.appendChild(div);
+  });
+}
+
+function cargarCalculoParaEditar(c){
+  ponerBroker(c.broker);
+  $('ccActivo').value = c.activo || '';
+  $('ccPrecioCompra').value = c.precio_compra;
+  $('ccCantidad').value = c.cantidad;
+  $('ccPrecioVenta').value = c.precio_venta || '';
+  $('ccCantidadVenta').value = c.cantidad_venta && c.cantidad_venta !== c.cantidad ? c.cantidad_venta : '';
+  $('ccTrm').value = c.trm || '';
+  calculoEditandoId = c.id;
+  $('ccBtnGuardar').textContent = 'Guardar cambios';
+  calcular();
+  $('modalCalcComisiones').querySelector('.modal-body').scrollTop = 0;
+}
+
+async function borrarCalculoGuardado(id){
+  if (!confirm('¿Borrar este cálculo guardado? No se puede deshacer.')) return;
+  const { error } = await sb.from('calculos_comisiones').delete().eq('id', id);
+  if (error){ mostrarToast('No se pudo borrar: ' + error.message); return; }
+  if (calculoEditandoId === id) limpiarCalcComisiones();
+  mostrarToast('Cálculo eliminado');
+  cargarCalculosGuardados();
+}
+
+$('ccBtnGuardar').onclick = async () => {
+  if (!ultimoResultado) return;
+  $('ccBtnGuardar').disabled = true;
+
+  const registro = {
+    activo: ultimoResultado.activo || null,
+    broker: ultimoResultado.broker,
+    moneda: ultimoResultado.moneda,
+    cantidad: ultimoResultado.cantidad,
+    precio_compra: ultimoResultado.precio_compra,
+    cantidad_venta: ultimoResultado.cantidad_venta,
+    precio_venta: ultimoResultado.precio_venta || null,
+    comision_compra: ultimoResultado.comision_compra,
+    comision_venta: ultimoResultado.comision_venta,
+    ganancia_bruta: ultimoResultado.ganancia_bruta,
+    ganancia_neta: ultimoResultado.ganancia_neta,
+    trm: ultimoResultado.trm
+  };
+
+  const { error } = calculoEditandoId
+    ? await sb.from('calculos_comisiones').update(registro).eq('id', calculoEditandoId)
+    : await sb.from('calculos_comisiones').insert(registro);
+
+  $('ccBtnGuardar').disabled = false;
+  if (error){ mostrarToast('No se pudo guardar: ' + error.message); return; }
+
+  mostrarToast(calculoEditandoId ? 'Cálculo actualizado' : 'Cálculo guardado');
+  limpiarCalcComisiones();
+  cargarCalculosGuardados();
+};
+
+/* =========================================================================
+   ==================  CALCULADORA DE DESCUENTO DEL 14%  ===================
+   ========================================================================= */
+
+function abrirCalcDescuento(){
+  $('modalCalcDescuento').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarCalcDescuento(){
+  $('modalCalcDescuento').classList.add('oculto');
+  document.body.style.overflow = '';
+}
+$('btnAbrirCalcDescuento').onclick = abrirCalcDescuento;
+$('cerrarCalcDescuento').onclick = cerrarCalcDescuento;
+$('modalCalcDescuento').addEventListener('click', e => { if (e.target === $('modalCalcDescuento')) cerrarCalcDescuento(); });
+
+function calcularDescuento(){
+  const valor = parseFloat($('cdValor').value) || 0;
+  const descuento = valor * 0.14;
+  const final = valor - descuento;
+
+  const fmt = n => n.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  $('resultadoCalcDescuento').innerHTML = `
+    <div class="fila"><span>Valor original</span><span>${fmt(valor)}</span></div>
+    <div class="fila"><span>Descuento (14%)</span><span>-${fmt(descuento)}</span></div>
+    <div class="fila total"><span>Valor final</span><span>${fmt(final)}</span></div>
+  `;
+  $('resultadoCalcDescuento').classList.remove('oculto');
+}
+$('btnCalcularDescuento').onclick = calcularDescuento;
+$('cdBtnLimpiar').onclick = () => {
+  $('cdValor').value = '';
+  $('resultadoCalcDescuento').classList.add('oculto');
+};
 </script>
 </body>
 </html>
