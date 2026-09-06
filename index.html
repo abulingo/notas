@@ -286,6 +286,90 @@ header.barra h1{font-size:26px;margin:0}
   .modal-body textarea{min-height:200px}
   .grupo-form{grid-template-columns:1fr}
 }
+
+/* ---------- ingreso con Google / separador ---------- */
+.separador{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--tinta-suave);font-size:12px;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.08em}
+.separador::before,.separador::after{content:"";flex:1;height:1px;background:var(--linea)}
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#fff;border:1px solid var(--linea);color:var(--tinta);
+  padding:10px 18px;border-radius:var(--r);cursor:pointer;font-weight:500;
+}
+.btn-google:hover{border-color:var(--tinta)}
+.btn-google svg{width:18px;height:18px;flex:none}
+
+/* ---------- pie de página / enlaces legales ---------- */
+footer.pie-pagina{
+  max-width:1080px;margin:40px auto 0;padding:18px 20px 0;
+  border-top:1px solid var(--linea);
+  display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+  font-size:12.5px;color:var(--tinta-suave);
+}
+footer.pie-pagina button{
+  background:none;border:0;padding:0;cursor:pointer;color:var(--tinta-suave);
+  text-decoration:underline;font:inherit;
+}
+footer.pie-pagina button:hover{color:var(--azul)}
+.enlaces-legales-login{text-align:center;margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.enlaces-legales-login button{
+  background:none;border:0;padding:0;cursor:pointer;color:var(--tinta-suave);
+  text-decoration:underline;font-size:12.5px;font-family:inherit;
+}
+.enlaces-legales-login button:hover{color:var(--azul)}
+
+/* ---------- documentos legales dentro de modal ---------- */
+.doc-legal{font-size:14.5px;line-height:1.7;color:#2A2E34}
+.doc-legal h3{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;margin:20px 0 8px}
+.doc-legal h3:first-child{margin-top:0}
+.doc-legal p{margin:0 0 10px}
+.doc-legal ul{margin:0 0 10px;padding-left:20px}
+.doc-legal .fecha-doc{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+
+/* ---------- adjuntos en el editor de notas ---------- */
+.adjuntos-editor{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.chip-adjunto{
+  display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--linea);
+  border-radius:99px;padding:4px 6px 4px 10px;font-size:12px;max-width:220px;
+}
+.chip-adjunto span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip-adjunto button{background:none;border:0;cursor:pointer;color:var(--tinta-suave);font-size:14px;line-height:1;padding:2px}
+.chip-adjunto button:hover{color:var(--alerta)}
+.btn-adjuntar{
+  display:inline-flex;align-items:center;gap:6px;background:none;border:1px dashed var(--linea);
+  border-radius:var(--r);padding:8px 12px;cursor:pointer;font-size:13px;color:var(--tinta-suave);margin-bottom:4px;
+}
+.btn-adjuntar:hover{border-color:var(--azul);color:var(--azul)}
+
+/* ---------- galerías de adjuntos (fichas y modal) ---------- */
+.galeria-mini{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.galeria-mini img{width:52px;height:52px;object-fit:cover;border-radius:var(--r);border:1px solid var(--linea)}
+.galeria-mini .doc-mini{
+  width:52px;height:52px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--linea);border-radius:var(--r);font-size:20px;background:#fff;
+}
+.galeria-grande{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.galeria-grande img{max-width:220px;max-height:220px;object-fit:cover;border-radius:var(--r);border:1px solid var(--linea);cursor:zoom-in}
+.galeria-grande a.doc-link{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--linea);border-radius:var(--r);
+  padding:10px 14px;font-size:13.5px;color:var(--tinta);text-decoration:none;background:#fff;
+}
+.galeria-grande a.doc-link:hover{border-color:var(--azul);color:var(--azul)}
+
+/* ---------- asistente de IA (Gemini) ---------- */
+.chat-caja{display:flex;flex-direction:column;height:60vh;max-height:520px}
+.chat-cuota{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--tinta-suave);margin-bottom:10px;text-align:right}
+.chat-mensajes{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 4px 10px}
+.burbuja{max-width:82%;padding:10px 13px;border-radius:10px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.burbuja.usuario{align-self:flex-end;background:var(--azul);color:#fff;border-bottom-right-radius:2px}
+.burbuja.modelo{align-self:flex-start;background:#fff;border:1px solid var(--linea);border-bottom-left-radius:2px}
+.burbuja .archivo-adjunto-msj{display:block;font-size:11px;opacity:.75;margin-top:4px}
+.chat-form{display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--linea);padding-top:12px;margin-top:10px}
+.chat-form textarea{
+  flex:1;resize:none;min-height:44px;max-height:120px;border:1px solid var(--linea);
+  border-radius:var(--r);padding:9px 11px;background:#fff;
+}
+.chat-archivos-pendientes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chat-agotado{text-align:center;padding:20px;color:var(--tinta-suave);font-size:13.5px}
 </style>
 </head>
 <body>
@@ -312,6 +396,23 @@ header.barra h1{font-size:26px;margin:0}
 
     <button id="btnAuth" class="btn" style="width:100%">Entrar</button>
     <p class="nota-pie" id="pieAuth">¿Primera vez? Crea una cuenta con el enlace de arriba.</p>
+
+    <div class="separador">o</div>
+    <button id="btnGoogle" type="button" class="btn-google">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.6 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+        <path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.4C29.5 34.9 26.9 36 24 36c-5.3 0-9.8-3.4-11.4-8.1l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.4-5.8 6.9l6.5 5.4C39.6 37.4 44 31.4 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+      </svg>
+      Continuar con Google
+    </button>
+
+    <div class="enlaces-legales-login">
+      <button id="btnAbrirPrivacidadLogin" type="button">Política de privacidad</button>
+      <span>·</span>
+      <button id="btnAbrirTerminosLogin" type="button">Términos y condiciones</button>
+    </div>
   </div>
 </section>
 
@@ -340,11 +441,21 @@ header.barra h1{font-size:26px;margin:0}
       <h3>➖ Descuento del 14%</h3>
       <button id="btnAbrirCalcDescuento" class="btn btn-chico" style="align-self:flex-start">Abrir calculadora</button>
     </div>
+    <div class="tarjeta-herramienta">
+      <h3>🤖 Asistente IA</h3>
+      <p>Gemini 3.8 Flash — texto, imágenes y documentos. 4 consultas al día.</p>
+      <button id="btnAbrirGemini" class="btn btn-chico" style="align-self:flex-start">Abrir asistente</button>
+    </div>
   </div>
 
   <section class="editor">
     <input id="titulo" type="text" placeholder="Título de la nota">
     <textarea id="contenido" placeholder="Escribe aquí…"></textarea>
+
+    <input type="file" id="inputAdjuntosNota" multiple accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx" class="oculto">
+    <button type="button" class="btn-adjuntar" id="btnAdjuntarNota">📎 Adjuntar imágenes o documentos</button>
+    <div class="adjuntos-editor" id="adjuntosEditor"></div>
+
     <div class="pie">
       <span class="pista">Ctrl + Enter para guardar</span>
       <div style="display:flex;gap:8px">
@@ -360,6 +471,11 @@ header.barra h1{font-size:26px;margin:0}
   </div>
 
   <div id="fichas" class="fichas"></div>
+
+  <footer class="pie-pagina">
+    <button id="btnAbrirPrivacidad" type="button">Política de privacidad</button>
+    <button id="btnAbrirTerminos" type="button">Términos y condiciones</button>
+  </footer>
 </main>
 
 <!-- ============ MODAL PARA VER/EDITAR NOTA ============ -->
@@ -463,15 +579,146 @@ header.barra h1{font-size:26px;margin:0}
   </div>
 </div>
 
+<!-- ============ MODAL: POLÍTICA DE PRIVACIDAD ============ -->
+<div id="modalPrivacidad" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Política de privacidad</h2>
+      <button class="modal-close" id="cerrarPrivacidad" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="doc-legal">
+        <p class="fecha-doc">Última actualización: [completa la fecha antes de publicar]</p>
+
+        <h3>1. Quién trata tus datos</h3>
+        <p>Cajón es una aplicación personal de notas privadas. El responsable del tratamiento de los datos es [tu nombre / nombre del proyecto], contactable en [tu correo de contacto].</p>
+
+        <h3>2. Qué datos recogemos</h3>
+        <ul>
+          <li>Tu correo electrónico y, si entras con Google, el nombre y la foto asociados a esa cuenta.</li>
+          <li>El contenido de las notas que escribes y los archivos (imágenes o documentos) que adjuntas a ellas.</li>
+          <li>Los cálculos que guardas en las calculadoras de comisiones y descuento.</li>
+          <li>Los mensajes y archivos que envías al asistente de IA, y las respuestas que recibes.</li>
+        </ul>
+
+        <h3>3. Para qué usamos esos datos</h3>
+        <p>Únicamente para prestarte el servicio: guardar y mostrarte tus propias notas y cálculos, autenticarte, y hacer funcionar el asistente de IA. No usamos tus datos con fines publicitarios ni los vendemos a terceros.</p>
+
+        <h3>4. Con quién se comparten</h3>
+        <p>Para operar Cajón usamos dos proveedores, que actúan como encargados del tratamiento y solo procesan tus datos para prestar su servicio técnico:</p>
+        <ul>
+          <li><strong>Supabase Inc.</strong> — aloja la base de datos, la autenticación y el almacenamiento de archivos.</li>
+          <li><strong>Google Cloud / Vertex AI</strong> — procesa los mensajes que envías al asistente de IA (Gemini) para generar la respuesta.</li>
+        </ul>
+
+        <h3>5. Cuánto tiempo conservamos tus datos</h3>
+        <p>Mientras tu cuenta exista. Puedes borrar notas, cálculos o adjuntos individualmente cuando quieras, o pedir la eliminación completa de tu cuenta escribiendo a [tu correo de contacto].</p>
+
+        <h3>6. Seguridad</h3>
+        <p>Las contraseñas se almacenan cifradas, la conexión viaja siempre por HTTPS, y cada usuario solo puede leer sus propios datos (reglas de seguridad a nivel de fila en la base de datos). Ningún sistema es 100% infalible; si detectamos un incidente de seguridad relevante, te lo notificaremos.</p>
+
+        <h3>7. Tus derechos</h3>
+        <p>Puedes acceder a tus datos, corregirlos, exportarlos o pedir su eliminación en cualquier momento, escribiendo a [tu correo de contacto].</p>
+
+        <h3>8. Cambios en esta política</h3>
+        <p>Si esta política cambia de forma importante, lo avisaremos dentro de la aplicación antes de que entre en vigor.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cerrarPrivacidad2">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: TÉRMINOS Y CONDICIONES ============ -->
+<div id="modalTerminos" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Términos y condiciones</h2>
+      <button class="modal-close" id="cerrarTerminos" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="doc-legal">
+        <p class="fecha-doc">Última actualización: [completa la fecha antes de publicar]</p>
+        <p><em>Esta es una plantilla general orientativa y no constituye asesoría legal formal; si el servicio crece o pasa a cobrar, conviene que un abogado la revise.</em></p>
+
+        <h3>1. Qué es Cajón</h3>
+        <p>Cajón es una aplicación personal de notas privadas, con calculadoras auxiliares de comisiones de bolsa y descuentos, y un asistente de inteligencia artificial experimental (Gemini 3.8 Flash).</p>
+
+        <h3>2. El servicio es gratuito por ahora</h3>
+        <p>Por el momento, usar Cajón no tiene ningún costo. No hay planes de pago, suscripciones ni compras activas. Si en el futuro se introdujera algún plan pago, se avisará con antelación razonable dentro de la aplicación, y no se realizará ningún cobro sin tu aceptación explícita.</p>
+
+        <h3>3. Política de compras y reembolsos</h3>
+        <p>Como actualmente no se procesa ningún pago, no aplica ninguna política de compra, facturación o reembolso. Si en el futuro se ofrecen planes pagos, se publicará aquí una política de compras y reembolsos independiente antes de habilitar cualquier cobro.</p>
+
+        <h3>4. Entrega del servicio</h3>
+        <p>Cajón es un servicio digital: el acceso se entrega de forma inmediata al crear tu cuenta (o al confirmar tu correo, si esa opción está activada en el proyecto). No existen envíos físicos ni plazos de entrega asociados a productos materiales.</p>
+
+        <h3>5. Garantías y disponibilidad</h3>
+        <p>El servicio se ofrece "tal cual" y "según disponibilidad". No garantizamos que esté disponible de forma ininterrumpida, libre de errores, ni que los datos se conserven de manera permanente; te recomendamos mantener copia de la información que te resulte importante. Las respuestas del asistente de IA pueden contener errores o imprecisiones: no las tomes como asesoría profesional (legal, médica, financiera, etc.).</p>
+
+        <h3>6. Límites de uso</h3>
+        <p>El asistente de IA tiene un límite de 4 consultas por usuario por día. Este límite y otras cuotas del servicio pueden ajustarse en el futuro para mantener el servicio sostenible.</p>
+
+        <h3>7. Uso aceptable</h3>
+        <p>No está permitido usar Cajón para subir contenido ilegal, contenido que infrinja derechos de terceros, ni intentar vulnerar la seguridad de la aplicación o acceder a datos de otras personas.</p>
+
+        <h3>8. Propiedad de tus contenidos</h3>
+        <p>Tus notas y los archivos que subes siguen siendo tuyos. Cajón no reclama ningún derecho sobre ellos, más allá de lo estrictamente necesario para almacenarlos y mostrártelos a ti.</p>
+
+        <h3>9. Tu cuenta</h3>
+        <p>Eres responsable de mantener tu contraseña en privado. Puedes eliminar tu cuenta cuando quieras; nos reservamos el derecho de suspender cuentas que incumplan estos términos.</p>
+
+        <h3>10. Cambios en estos términos</h3>
+        <p>Podemos actualizar estos términos con el tiempo. El uso continuado de Cajón después de un cambio implica que lo aceptas.</p>
+
+        <h3>11. Contacto</h3>
+        <p>Dudas sobre estos términos: [tu correo de contacto].</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cerrarTerminos2">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: ASISTENTE IA (GEMINI) ============ -->
+<div id="modalGemini" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Asistente IA — Gemini 3.8 Flash</h2>
+      <button class="modal-close" id="cerrarGemini" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="chat-caja">
+        <div class="chat-cuota" id="geminiCuota">Cargando cuota…</div>
+        <div id="avisoGemini" class="aviso oculto"></div>
+        <div class="chat-mensajes" id="geminiMensajes"></div>
+        <div class="chat-archivos-pendientes" id="geminiArchivosPendientes"></div>
+        <div class="chat-form">
+          <input type="file" id="geminiArchivoInput" multiple accept="image/*,.pdf,.doc,.docx,.txt" class="oculto">
+          <button type="button" class="btn btn-fantasma btn-chico" id="geminiBtnAdjuntar" title="Adjuntar archivo">📎</button>
+          <textarea id="geminiTexto" placeholder="Escribe tu mensaje…" rows="1"></textarea>
+          <button class="btn btn-chico" id="geminiBtnEnviar">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 /* ⬇⬇ REEMPLAZA ESTOS DOS VALORES (Supabase → Project Settings → API) ⬇⬇ */
-const SUPABASE_URL = 'https://rbipvhgyhrhmfzhcmoms.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw';
+const SUPABASE_URL = 'https://udfayyzsgortbamclatw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZmF5eXpzZ29ydGJhbWNsYXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2NTkwMjcsImV4cCI6MjEwNDIzNTAyN30.FL6B6DE_IUTaf9pDWYnhTlL0ndXuFvbfwp0-S6XZ-B8'
 /* La anon key es pública por diseño: quien protege los datos es el RLS del SQL. */
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* URL de las Edge Functions de este mismo proyecto Supabase */
+const FUNCIONES_URL = SUPABASE_URL + '/functions/v1';
+const BUCKET_ADJUNTOS = 'notas-adjuntos';
 
 const $ = id => document.getElementById(id);
 const puerta = $('puerta'), escritorio = $('escritorio');
@@ -480,6 +727,14 @@ let editandoId = null;      // id de la nota en edición
 let notas = [];
 let notaEnModal = null;     // nota que se está viendo/editando en el modal
 let modalEditando = false;  // si el modal está en modo edición
+let usuarioActual = null;   // usuario de Supabase Auth con sesión activa
+
+let adjuntosPorNota = {};        // { notaId: [adjunto, ...] }
+let archivosPendientesNota = []; // File[] elegidos en el editor, antes de guardar la nota
+let urlsFirmadas = {};           // { ruta_storage: url } cache de imágenes ya firmadas
+
+let mensajesGemini = [];         // historial cargado del asistente
+let archivosPendientesGemini = []; // [{nombre, mimeType, base64}] pendientes de enviar
 
 /* ---------- avisos ---------- */
 function aviso(el, texto, ok = false){
@@ -542,6 +797,14 @@ $('btnAuth').onclick = async () => {
 
 $('btnSalir').onclick = async () => { await sb.auth.signOut(); };
 
+$('btnGoogle').onclick = async () => {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) aviso($('avisoAuth'), traducir(error.message));
+};
+
 sb.auth.onAuthStateChange((_evt, session) => {
   if (session) abrirEscritorio(session.user); else cerrarEscritorio();
 });
@@ -550,22 +813,26 @@ sb.auth.getSession().then(({ data }) => {
 });
 
 function abrirEscritorio(user){
+  usuarioActual = user;
   puerta.classList.add('oculto');
   escritorio.classList.remove('oculto');
-  $('quien').textContent = user.email;
+  $('quien').textContent = user.email || user.user_metadata?.full_name || 'tu cuenta';
   $('clave').value = '';
   cargarNotas();
 }
 function cerrarEscritorio(){
   escritorio.classList.add('oculto');
   puerta.classList.remove('oculto');
-  notas = []; editandoId = null;
+  notas = []; editandoId = null; usuarioActual = null;
+  adjuntosPorNota = {}; archivosPendientesNota = [];
+  mensajesGemini = []; archivosPendientesGemini = [];
   $('fichas').innerHTML = '';
   limpiarEditor();
   ponerModo('entrar');
   cerrarModal();
   cerrarCalcComisiones();
   cerrarCalcDescuento();
+  cerrarGemini();
 }
 
 /* ---------- notas ---------- */
@@ -578,7 +845,48 @@ async function cargarNotas(){
   if (error){ aviso($('avisoApp'), 'No se pudieron cargar las notas: ' + error.message); return; }
   aviso($('avisoApp'), '');
   notas = data;
+  await cargarAdjuntosDeNotas(notas.map(n => n.id));
   pintar();
+}
+
+async function cargarAdjuntosDeNotas(idsNotas){
+  adjuntosPorNota = {};
+  if (!idsNotas.length) return;
+
+  const { data, error } = await sb
+    .from('notas_adjuntos')
+    .select('id, nota_id, ruta_storage, nombre_original, tipo, mime_type')
+    .in('nota_id', idsNotas);
+
+  if (error || !data) return;
+
+  data.forEach(a => {
+    if (!adjuntosPorNota[a.nota_id]) adjuntosPorNota[a.nota_id] = [];
+    adjuntosPorNota[a.nota_id].push(a);
+  });
+
+  // Precalcula las URLs firmadas de todas las imágenes (bucket privado)
+  const rutasImagenes = data.filter(a => a.tipo === 'imagen').map(a => a.ruta_storage);
+  urlsFirmadas = {};
+  if (rutasImagenes.length > 0){
+    const { data: firmadas, error: errorFirma } = await sb.storage
+      .from(BUCKET_ADJUNTOS)
+      .createSignedUrls(rutasImagenes, 3600);
+    if (!errorFirma && firmadas){
+      firmadas.forEach((res, i) => { if (res.signedUrl) urlsFirmadas[rutasImagenes[i]] = res.signedUrl; });
+    }
+  }
+
+  // También los enlaces de descarga de documentos, firmados igual
+  const rutasDocs = data.filter(a => a.tipo === 'documento').map(a => a.ruta_storage);
+  if (rutasDocs.length > 0){
+    const { data: firmadasDocs, error: errorFirmaDocs } = await sb.storage
+      .from(BUCKET_ADJUNTOS)
+      .createSignedUrls(rutasDocs, 3600);
+    if (!errorFirmaDocs && firmadasDocs){
+      firmadasDocs.forEach((res, i) => { if (res.signedUrl) urlsFirmadas[rutasDocs[i]] = res.signedUrl; });
+    }
+  }
 }
 
 $('btnGuardar').onclick = guardar;
@@ -589,18 +897,86 @@ $('contenido').addEventListener('keydown', e => {
 async function guardar(){
   const titulo = $('titulo').value.trim();
   const contenido = $('contenido').value.trim();
-  if (!titulo && !contenido) return aviso($('avisoApp'), 'La nota está vacía.');
+  if (!titulo && !contenido && archivosPendientesNota.length === 0)
+    return aviso($('avisoApp'), 'La nota está vacía.');
 
   $('btnGuardar').disabled = true;
-  const { error } = editandoId
-    ? await sb.from('notas').update({ titulo, contenido }).eq('id', editandoId)
-    : await sb.from('notas').insert({ titulo, contenido });
-  $('btnGuardar').disabled = false;
 
-  if (error) return aviso($('avisoApp'), 'No se guardó: ' + error.message);
+  let notaId = editandoId;
+  let error = null;
+
+  if (editandoId){
+    ({ error } = await sb.from('notas').update({ titulo, contenido }).eq('id', editandoId));
+  } else {
+    const resp = await sb.from('notas').insert({ titulo, contenido }).select('id').single();
+    error = resp.error;
+    notaId = resp.data?.id || null;
+  }
+
+  if (error){
+    $('btnGuardar').disabled = false;
+    return aviso($('avisoApp'), 'No se guardó: ' + error.message);
+  }
+
+  if (notaId && archivosPendientesNota.length > 0){
+    await subirAdjuntosPendientes(notaId);
+  }
+
+  $('btnGuardar').disabled = false;
   limpiarEditor();
   cargarNotas();
   mostrarToast('Nota guardada correctamente');
+}
+
+/* ---------- adjuntos del editor (imágenes y documentos) ---------- */
+$('btnAdjuntarNota').onclick = () => $('inputAdjuntosNota').click();
+$('inputAdjuntosNota').addEventListener('change', (e) => {
+  archivosPendientesNota.push(...Array.from(e.target.files));
+  renderAdjuntosEditor();
+  e.target.value = '';
+});
+
+function renderAdjuntosEditor(){
+  const cont = $('adjuntosEditor');
+  cont.innerHTML = '';
+  archivosPendientesNota.forEach((f, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip-adjunto';
+    chip.innerHTML = `<span>${f.type.startsWith('image/') ? '🖼️' : '📄'} ${f.name}</span>`;
+    const btnQuitar = document.createElement('button');
+    btnQuitar.type = 'button';
+    btnQuitar.textContent = '✕';
+    btnQuitar.title = 'Quitar';
+    btnQuitar.onclick = () => { archivosPendientesNota.splice(i, 1); renderAdjuntosEditor(); };
+    chip.appendChild(btnQuitar);
+    cont.appendChild(chip);
+  });
+}
+
+async function subirAdjuntosPendientes(notaId){
+  for (const archivo of archivosPendientesNota){
+    const esImagen = archivo.type.startsWith('image/');
+    const rutaLimpia = archivo.name.replace(/[^\w.\-]+/g, '_');
+    const ruta = `${usuarioActual.id}/${notaId}/${crypto.randomUUID()}-${rutaLimpia}`;
+
+    const { error: errorSubida } = await sb.storage.from(BUCKET_ADJUNTOS).upload(ruta, archivo, {
+      contentType: archivo.type || 'application/octet-stream',
+    });
+    if (errorSubida){
+      mostrarToast(`No se pudo subir "${archivo.name}": ` + errorSubida.message);
+      continue;
+    }
+
+    await sb.from('notas_adjuntos').insert({
+      nota_id: notaId,
+      ruta_storage: ruta,
+      nombre_original: archivo.name,
+      tipo: esImagen ? 'imagen' : 'documento',
+      mime_type: archivo.type || null,
+      tamano_bytes: archivo.size,
+    });
+  }
+  archivosPendientesNota = [];
 }
 
 function editar(id){
@@ -622,10 +998,18 @@ function limpiarEditor(){
   $('contenido').value = '';
   $('btnGuardar').textContent = 'Guardar nota';
   $('btnCancelar').classList.add('oculto');
+  archivosPendientesNota = [];
+  renderAdjuntosEditor();
 }
 
 async function borrar(id){
   if (!confirm('¿Borrar esta nota? No se puede deshacer.')) return;
+
+  const adjuntos = adjuntosPorNota[id] || [];
+  if (adjuntos.length > 0){
+    await sb.storage.from(BUCKET_ADJUNTOS).remove(adjuntos.map(a => a.ruta_storage));
+  }
+
   const { error } = await sb.from('notas').delete().eq('id', id);
   if (error) return aviso($('avisoApp'), 'No se borró: ' + error.message);
   if (editandoId === id) limpiarEditor();
@@ -674,6 +1058,55 @@ function formatearTextoConLinks(texto) {
   });
 }
 
+/* ---------- galerías de adjuntos ---------- */
+function construirGaleriaMini(notaId){
+  const cont = document.createElement('div');
+  const adjuntos = adjuntosPorNota[notaId] || [];
+  if (adjuntos.length === 0) return cont;
+  cont.className = 'galeria-mini';
+  adjuntos.slice(0, 6).forEach(a => {
+    if (a.tipo === 'imagen' && urlsFirmadas[a.ruta_storage]){
+      const img = document.createElement('img');
+      img.src = urlsFirmadas[a.ruta_storage];
+      img.alt = a.nombre_original;
+      cont.appendChild(img);
+    } else {
+      const doc = document.createElement('div');
+      doc.className = 'doc-mini';
+      doc.title = a.nombre_original;
+      doc.textContent = '📄';
+      cont.appendChild(doc);
+    }
+  });
+  return cont;
+}
+
+function construirGaleriaGrande(notaId){
+  const cont = document.createElement('div');
+  const adjuntos = adjuntosPorNota[notaId] || [];
+  if (adjuntos.length === 0) return cont;
+  cont.className = 'galeria-grande';
+  adjuntos.forEach(a => {
+    const url = urlsFirmadas[a.ruta_storage];
+    if (a.tipo === 'imagen'){
+      const img = document.createElement('img');
+      img.src = url || '';
+      img.alt = a.nombre_original;
+      img.onclick = () => window.open(url, '_blank');
+      cont.appendChild(img);
+    } else {
+      const link = document.createElement('a');
+      link.className = 'doc-link';
+      link.href = url || '#';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = '📄 ' + a.nombre_original;
+      cont.appendChild(link);
+    }
+  });
+  return cont;
+}
+
 /* ---------- MODAL ---------- */
 function abrirModal(id) {
   const nota = notas.find(n => n.id === id);
@@ -690,6 +1123,7 @@ function abrirModal(id) {
       ${formatearTextoConLinks(nota.contenido || '')}
     </div>
   `;
+  body.prepend(construirGaleriaGrande(nota.id));
   
   const footer = $('modalFooter');
   footer.innerHTML = `
@@ -800,8 +1234,29 @@ document.addEventListener('keydown', (e) => {
     if (!$('modalNota').classList.contains('oculto')) cerrarModal();
     if (!$('modalCalcComisiones').classList.contains('oculto')) cerrarCalcComisiones();
     if (!$('modalCalcDescuento').classList.contains('oculto')) cerrarCalcDescuento();
+    if (!$('modalPrivacidad').classList.contains('oculto')) cerrarPrivacidad();
+    if (!$('modalTerminos').classList.contains('oculto')) cerrarTerminos();
+    if (!$('modalGemini').classList.contains('oculto')) cerrarGemini();
   }
 });
+
+/* ---------- modales legales (política de privacidad / términos) ---------- */
+function abrirPrivacidad(){ $('modalPrivacidad').classList.remove('oculto'); document.body.style.overflow = 'hidden'; }
+function cerrarPrivacidad(){ $('modalPrivacidad').classList.add('oculto'); document.body.style.overflow = ''; }
+function abrirTerminos(){ $('modalTerminos').classList.remove('oculto'); document.body.style.overflow = 'hidden'; }
+function cerrarTerminos(){ $('modalTerminos').classList.add('oculto'); document.body.style.overflow = ''; }
+
+$('btnAbrirPrivacidad').onclick = abrirPrivacidad;
+$('btnAbrirPrivacidadLogin').onclick = abrirPrivacidad;
+$('cerrarPrivacidad').onclick = cerrarPrivacidad;
+$('cerrarPrivacidad2').onclick = cerrarPrivacidad;
+$('modalPrivacidad').addEventListener('click', e => { if (e.target === $('modalPrivacidad')) cerrarPrivacidad(); });
+
+$('btnAbrirTerminos').onclick = abrirTerminos;
+$('btnAbrirTerminosLogin').onclick = abrirTerminos;
+$('cerrarTerminos').onclick = cerrarTerminos;
+$('cerrarTerminos2').onclick = cerrarTerminos;
+$('modalTerminos').addEventListener('click', e => { if (e.target === $('modalTerminos')) cerrarTerminos(); });
 
 $('modalCerrar').onclick = cerrarModal;
 
@@ -857,6 +1312,10 @@ function pintar(){
       });
     });
 
+    ficha.appendChild(h3);
+    ficha.appendChild(construirGaleriaMini(n.id));
+    ficha.appendChild(p);
+
     const meta = document.createElement('div');
     meta.className = 'meta';
 
@@ -890,7 +1349,7 @@ function pintar(){
     
     acciones.append(bCopiar, bDel);
     meta.append(fecha, acciones);
-    ficha.append(h3, p, meta);
+    ficha.appendChild(meta);
     cont.appendChild(ficha);
   });
 }
@@ -1180,6 +1639,177 @@ $('cdBtnLimpiar').onclick = () => {
   $('cdValor').value = '';
   $('resultadoCalcDescuento').classList.add('oculto');
 };
+
+/* =========================================================================
+   =========================  ASISTENTE IA (GEMINI)  =======================
+   ========================================================================= */
+
+const LIMITE_DIARIO_GEMINI = 4;
+
+function abrirGemini(){
+  $('modalGemini').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+  cargarHistorialGemini();
+  cargarCuotaGemini();
+  setTimeout(() => $('geminiTexto').focus(), 50);
+}
+function cerrarGemini(){
+  $('modalGemini').classList.add('oculto');
+  document.body.style.overflow = '';
+}
+$('btnAbrirGemini').onclick = abrirGemini;
+$('cerrarGemini').onclick = cerrarGemini;
+$('modalGemini').addEventListener('click', e => { if (e.target === $('modalGemini')) cerrarGemini(); });
+
+async function cargarHistorialGemini(){
+  const { data, error } = await sb
+    .from('gemini_mensajes')
+    .select('rol, contenido, nombre_archivo, created_at')
+    .order('created_at', { ascending: true })
+    .limit(100);
+
+  if (error){ aviso($('avisoGemini'), 'No se pudo cargar el historial: ' + error.message); return; }
+  aviso($('avisoGemini'), '');
+  mensajesGemini = data || [];
+  renderMensajesGemini();
+}
+
+function renderMensajesGemini(){
+  const cont = $('geminiMensajes');
+  cont.innerHTML = '';
+  if (mensajesGemini.length === 0){
+    const vacio = document.createElement('div');
+    vacio.className = 'vacio';
+    vacio.textContent = 'Escríbele algo al asistente. Puedes adjuntar una imagen o un documento con el 📎.';
+    cont.appendChild(vacio);
+    return;
+  }
+  mensajesGemini.forEach(m => {
+    const burbuja = document.createElement('div');
+    burbuja.className = 'burbuja ' + (m.rol === 'usuario' ? 'usuario' : 'modelo');
+    burbuja.textContent = m.contenido || '';
+    if (m.nombre_archivo){
+      const chip = document.createElement('span');
+      chip.className = 'archivo-adjunto-msj';
+      chip.textContent = '📎 ' + m.nombre_archivo;
+      burbuja.appendChild(chip);
+    }
+    cont.appendChild(burbuja);
+  });
+  cont.scrollTop = cont.scrollHeight;
+}
+
+async function cargarCuotaGemini(){
+  const hoy = new Date().toISOString().slice(0, 10);
+  const { data } = await sb
+    .from('gemini_limite')
+    .select('peticiones')
+    .eq('user_id', usuarioActual.id)
+    .eq('fecha', hoy)
+    .maybeSingle();
+
+  const usadas = data?.peticiones || 0;
+  actualizarCuotaGemini(Math.max(0, LIMITE_DIARIO_GEMINI - usadas));
+}
+
+function actualizarCuotaGemini(restantes){
+  $('geminiCuota').textContent = `Consultas restantes hoy: ${restantes} de ${LIMITE_DIARIO_GEMINI}`;
+  const agotado = restantes <= 0;
+  $('geminiTexto').disabled = agotado;
+  $('geminiBtnEnviar').disabled = agotado;
+  $('geminiBtnAdjuntar').disabled = agotado;
+}
+
+/* --- adjuntar archivos al chat --- */
+$('geminiBtnAdjuntar').onclick = () => $('geminiArchivoInput').click();
+$('geminiArchivoInput').addEventListener('change', async (e) => {
+  const archivos = Array.from(e.target.files).slice(0, 4 - archivosPendientesGemini.length);
+  for (const archivo of archivos){
+    const base64 = await archivoABase64(archivo);
+    archivosPendientesGemini.push({ nombre: archivo.name, mimeType: archivo.type || 'application/octet-stream', base64 });
+  }
+  renderArchivosPendientesGemini();
+  e.target.value = '';
+});
+
+function archivoABase64(archivo){
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result.split(',')[1] || '');
+    lector.onerror = reject;
+    lector.readAsDataURL(archivo);
+  });
+}
+
+function renderArchivosPendientesGemini(){
+  const cont = $('geminiArchivosPendientes');
+  cont.innerHTML = '';
+  archivosPendientesGemini.forEach((a, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip-adjunto';
+    chip.innerHTML = `<span>📎 ${a.nombre}</span>`;
+    const btnQuitar = document.createElement('button');
+    btnQuitar.type = 'button';
+    btnQuitar.textContent = '✕';
+    btnQuitar.onclick = () => { archivosPendientesGemini.splice(i, 1); renderArchivosPendientesGemini(); };
+    chip.appendChild(btnQuitar);
+    cont.appendChild(chip);
+  });
+}
+
+/* --- enviar mensaje --- */
+$('geminiTexto').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') enviarMensajeGemini();
+});
+$('geminiBtnEnviar').onclick = enviarMensajeGemini;
+
+async function enviarMensajeGemini(){
+  const texto = $('geminiTexto').value.trim();
+  if (!texto && archivosPendientesGemini.length === 0) return;
+
+  aviso($('avisoGemini'), '');
+  $('geminiBtnEnviar').disabled = true;
+  $('geminiTexto').disabled = true;
+
+  // Muestra el mensaje del usuario de inmediato, de forma optimista
+  mensajesGemini.push({
+    rol: 'usuario', contenido: texto,
+    nombre_archivo: archivosPendientesGemini.map(a => a.nombre).join(', ') || null,
+  });
+  renderMensajesGemini();
+
+  const { data: { session } } = await sb.auth.getSession();
+
+  try {
+    const resp = await fetch(`${FUNCIONES_URL}/gemini-chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ mensaje: texto, archivos: archivosPendientesGemini }),
+    });
+    const datos = await resp.json();
+
+    if (!resp.ok){
+      aviso($('avisoGemini'), datos.error || 'No se pudo contactar al asistente.');
+      if (typeof datos.restantes === 'number') actualizarCuotaGemini(datos.restantes);
+    } else {
+      mensajesGemini.push({ rol: 'modelo', contenido: datos.respuesta });
+      renderMensajesGemini();
+      if (typeof datos.restantes === 'number') actualizarCuotaGemini(datos.restantes);
+    }
+  } catch (err) {
+    aviso($('avisoGemini'), 'Error de red hablando con el asistente: ' + err.message);
+  }
+
+  $('geminiTexto').value = '';
+  archivosPendientesGemini = [];
+  renderArchivosPendientesGemini();
+  $('geminiTexto').disabled = false;
+  $('geminiBtnEnviar').disabled = false;
+  $('geminiTexto').focus();
+}
 </script>
 </body>
 </html>
