@@ -200,6 +200,15 @@ header.barra h1{font-size:26px;margin:0}
   animation:slideUp .3s ease;
 }
 .modal.modal-angosto{max-width:480px}
+.modal.modal-expandido {
+  max-width: 98vw;
+  height: 96vh;
+  max-height: 96vh;
+}
+.modal.modal-expandido .chat-caja {
+  height: 100%;
+  max-height: none;
+}
 @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 
 .modal-header{
@@ -723,7 +732,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
 
 <!-- ============ MODAL: ASISTENTE IA (GEMINI) ============ -->
 <div id="modalGemini" class="modal-overlay oculto">
-  <div class="modal">
+  <div class="modal modal-expandido">
     <div class="modal-header">
       <h2>Asistente IA — Gemini 3.8 Flash</h2>
       <button class="modal-close" id="cerrarGemini" title="Cerrar">✕</button>
