@@ -483,7 +483,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
     </div>
     <div class="tarjeta-herramienta">
       <h3>🤖 Asistente IA</h3>
-      <p>Gemini 3.8 Flash — texto, imágenes y documentos. 10 consultas al día.</p>
+      <p>Gemini 3.8 Flash — texto, imágenes y documentos. 5 consultas al día.</p>
       <button id="btnAbrirGemini" class="btn btn-chico" style="align-self:flex-start">Abrir asistente</button>
     </div>
   </div>
@@ -1688,7 +1688,7 @@ $('cdBtnLimpiar').onclick = () => {
    =========================  ASISTENTE IA (GEMINI)  =======================
    ========================================================================= */
 
-const LIMITE_DIARIO_GEMINI = 10;
+const LIMITE_DIARIO_GEMINI = 5;
 let registroDocumentos = {}; // { id: { codigo, lenguaje } } — documentos detectados en la última respuesta
 
 function extensionParaLenguaje(lang){
