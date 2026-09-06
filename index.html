@@ -370,6 +370,46 @@ footer.pie-pagina button:hover{color:var(--azul)}
 }
 .chat-archivos-pendientes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .chat-agotado{text-align:center;padding:20px;color:var(--tinta-suave);font-size:13.5px}
+
+/* ---------- formato tipo Markdown dentro de las respuestas del modelo ---------- */
+.burbuja.modelo :is(h1,h2,h3,h4){font-family:"Bricolage Grotesque",sans-serif;margin:10px 0 6px;line-height:1.25}
+.burbuja.modelo h1{font-size:19px}
+.burbuja.modelo h2{font-size:17px}
+.burbuja.modelo h3{font-size:15.5px}
+.burbuja.modelo p{margin:0 0 8px}
+.burbuja.modelo p:last-child{margin-bottom:0}
+.burbuja.modelo ul,.burbuja.modelo ol{margin:0 0 8px;padding-left:20px}
+.burbuja.modelo li{margin-bottom:2px}
+.burbuja.modelo a{color:var(--azul)}
+.burbuja.modelo strong{font-weight:700}
+.burbuja.modelo code{font-family:"JetBrains Mono",monospace;font-size:.9em;background:#EFEFE8;padding:1px 5px;border-radius:3px}
+.burbuja.modelo pre{background:#1c1e22;color:#eaeaea;padding:10px 12px;border-radius:6px;overflow-x:auto;margin:0 0 8px}
+.burbuja.modelo pre code{background:none;padding:0;color:inherit}
+.burbuja.modelo blockquote{margin:0 0 8px;padding-left:10px;border-left:3px solid var(--linea);color:var(--tinta-suave)}
+
+/* ---------- tarjeta de documento generado por el modelo (html/txt/etc) ---------- */
+.tarjeta-documento{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:#fff;border:1px solid var(--linea);border-radius:var(--r);
+  padding:10px 12px;margin:6px 0 10px;
+}
+.tarjeta-documento-info{display:flex;align-items:center;gap:8px;overflow:hidden}
+.tarjeta-documento-icono{font-size:18px;flex:none}
+.tarjeta-documento-nombre{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--tinta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tarjeta-documento-acciones{display:flex;gap:6px;flex:none}
+.tarjeta-documento-acciones button{
+  background:none;border:1px solid var(--linea);border-radius:var(--r);
+  padding:4px 10px;font-size:12px;cursor:pointer;color:var(--tinta-suave);
+}
+.tarjeta-documento-acciones button:hover{border-color:var(--azul);color:var(--azul)}
+
+/* ---------- indicador "procesando" mientras responde el modelo ---------- */
+.burbuja.procesando{display:flex;align-items:center;gap:8px;color:var(--tinta-suave);font-size:13.5px}
+.puntos-procesando{display:inline-flex;gap:3px}
+.puntos-procesando span{width:5px;height:5px;border-radius:50%;background:var(--tinta-suave);animation:parpadeo 1.1s infinite ease-in-out}
+.puntos-procesando span:nth-child(2){animation-delay:.15s}
+.puntos-procesando span:nth-child(3){animation-delay:.3s}
+@keyframes parpadeo{0%,80%,100%{opacity:.25}40%{opacity:1}}
 </style>
 </head>
 <body>
@@ -706,13 +746,19 @@ footer.pie-pagina button:hover{color:var(--azul)}
   </div>
 </div>
 
+<!-- Markdown de las respuestas del asistente (marked) + sanitizado obligatorio (DOMPurify) -->
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 /* ⬇⬇ REEMPLAZA ESTOS DOS VALORES (Supabase → Project Settings → API) ⬇⬇ */
 const SUPABASE_URL = 'https://udfayyzsgortbamclatw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZmF5eXpzZ29ydGJhbWNsYXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2NTkwMjcsImV4cCI6MjEwNDIzNTAyN30.FL6B6DE_IUTaf9pDWYnhTlL0ndXuFvbfwp0-S6XZ-B8'
-/* La anon key es pública por diseño: quien protege los datos es el RLS del SQL. */
+
+  
+  /* La anon key es pública por diseño: quien protege los datos es el RLS del SQL. */
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1645,6 +1691,67 @@ $('cdBtnLimpiar').onclick = () => {
    ========================================================================= */
 
 const LIMITE_DIARIO_GEMINI = 4;
+let registroDocumentos = {}; // { id: { codigo, lenguaje } } — documentos detectados en la última respuesta
+
+function extensionParaLenguaje(lang){
+  const mapa = { html:'.html', htm:'.html', txt:'.txt', text:'.txt', plaintext:'.txt',
+    markdown:'.md', md:'.md', css:'.css', javascript:'.js', js:'.js', json:'.json',
+    python:'.py', py:'.py', sql:'.sql', csv:'.csv', xml:'.xml', yaml:'.yaml', yml:'.yaml' };
+  return mapa[lang] || '.txt';
+}
+function mimeParaLenguaje(lang){
+  const mapa = { html:'text/html', htm:'text/html', css:'text/css', javascript:'text/javascript',
+    js:'text/javascript', json:'application/json', csv:'text/csv', xml:'application/xml' };
+  return mapa[lang] || 'text/plain';
+}
+
+const rendererGemini = new marked.Renderer();
+rendererGemini.code = (codigo, infostring) => {
+  const lenguaje = (infostring || '').trim().toLowerCase().split(/\s+/)[0];
+  const id = 'doc_' + Math.random().toString(36).slice(2, 10);
+  registroDocumentos[id] = { codigo, lenguaje };
+  const nombre = 'documento' + extensionParaLenguaje(lenguaje);
+  return `<div class="tarjeta-documento" data-doc-id="${id}">
+    <div class="tarjeta-documento-info">
+      <span class="tarjeta-documento-icono">📄</span>
+      <span class="tarjeta-documento-nombre">${nombre}</span>
+    </div>
+    <div class="tarjeta-documento-acciones">
+      <button type="button" class="btn-doc-ver" data-doc-id="${id}">Ver</button>
+      <button type="button" class="btn-doc-descargar" data-doc-id="${id}">Descargar</button>
+    </div>
+  </div>`;
+};
+
+function renderizarMarkdownModelo(texto){
+  const html = marked(texto || '', { renderer: rendererGemini, breaks: true });
+  return DOMPurify.sanitize(html);
+}
+
+function verDocumentoGemini(id){
+  const doc = registroDocumentos[id];
+  if (!doc) return;
+  const blob = new Blob([doc.codigo], { type: mimeParaLenguaje(doc.lenguaje) });
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+function descargarDocumentoGemini(id){
+  const doc = registroDocumentos[id];
+  if (!doc) return;
+  const blob = new Blob([doc.codigo], { type: mimeParaLenguaje(doc.lenguaje) });
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = 'documento' + extensionParaLenguaje(doc.lenguaje);
+  enlace.click();
+  URL.revokeObjectURL(enlace.href);
+}
+
+// Delegación de eventos: los botones de las tarjetas de documento se crean dinámicamente
+$('geminiMensajes').addEventListener('click', (e) => {
+  const btnVer = e.target.closest('.btn-doc-ver');
+  const btnDescargar = e.target.closest('.btn-doc-descargar');
+  if (btnVer) verDocumentoGemini(btnVer.dataset.docId);
+  if (btnDescargar) descargarDocumentoGemini(btnDescargar.dataset.docId);
+});
 
 function abrirGemini(){
   $('modalGemini').classList.remove('oculto');
@@ -1684,10 +1791,23 @@ function renderMensajesGemini(){
     cont.appendChild(vacio);
     return;
   }
+  registroDocumentos = {};
   mensajesGemini.forEach(m => {
     const burbuja = document.createElement('div');
+
+    if (m.procesando){
+      burbuja.className = 'burbuja modelo procesando';
+      burbuja.innerHTML = `Procesando <span class="puntos-procesando"><span></span><span></span><span></span></span>`;
+      cont.appendChild(burbuja);
+      return;
+    }
+
     burbuja.className = 'burbuja ' + (m.rol === 'usuario' ? 'usuario' : 'modelo');
-    burbuja.textContent = m.contenido || '';
+    if (m.rol === 'usuario'){
+      burbuja.textContent = m.contenido || '';
+    } else {
+      burbuja.innerHTML = renderizarMarkdownModelo(m.contenido || '');
+    }
     if (m.nombre_archivo){
       const chip = document.createElement('span');
       chip.className = 'archivo-adjunto-msj';
@@ -1771,11 +1891,13 @@ async function enviarMensajeGemini(){
   $('geminiBtnEnviar').disabled = true;
   $('geminiTexto').disabled = true;
 
-  // Muestra el mensaje del usuario de inmediato, de forma optimista
+  // Muestra el mensaje del usuario de inmediato, de forma optimista,
+  // y una burbuja de "procesando" mientras llega la respuesta.
   mensajesGemini.push({
     rol: 'usuario', contenido: texto,
     nombre_archivo: archivosPendientesGemini.map(a => a.nombre).join(', ') || null,
   });
+  mensajesGemini.push({ rol: 'modelo', procesando: true });
   renderMensajesGemini();
 
   const { data: { session } } = await sb.auth.getSession();
@@ -1791,8 +1913,11 @@ async function enviarMensajeGemini(){
     });
     const datos = await resp.json();
 
+    mensajesGemini.pop(); // quita la burbuja de "procesando"
+
     if (!resp.ok){
       aviso($('avisoGemini'), datos.error || 'No se pudo contactar al asistente.');
+      renderMensajesGemini();
       if (typeof datos.restantes === 'number') actualizarCuotaGemini(datos.restantes);
     } else {
       mensajesGemini.push({ rol: 'modelo', contenido: datos.respuesta });
@@ -1800,6 +1925,8 @@ async function enviarMensajeGemini(){
       if (typeof datos.restantes === 'number') actualizarCuotaGemini(datos.restantes);
     }
   } catch (err) {
+    mensajesGemini.pop(); // quita la burbuja de "procesando"
+    renderMensajesGemini();
     aviso($('avisoGemini'), 'Error de red hablando con el asistente: ' + err.message);
   }
 
