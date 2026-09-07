@@ -178,6 +178,28 @@ header.barra h1{font-size:26px;margin:0}
 .ficha-calculo .ganancia.negativa{color:var(--alerta);font-weight:700}
 .ficha-calculo .acciones{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}
 
+/* ---------- cronómetros ---------- */
+.form-nuevo-cron{display:flex;gap:8px;margin-bottom:18px}
+.form-nuevo-cron input{flex:1}
+.lista-cronometros{display:flex;flex-direction:column;gap:12px}
+.ficha-cronometro{
+  background:#fff;border:1px solid var(--linea);border-radius:var(--r);
+  padding:14px 16px;display:flex;flex-direction:column;gap:10px;animation:entra .28s ease both;
+}
+.ficha-cronometro .cab-cron{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ficha-cronometro .titulo-cron{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:16px;word-break:break-word}
+.ficha-cronometro .estado-cron{
+  font-family:"JetBrains Mono",monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;
+  padding:2px 8px;border-radius:99px;border:1px solid var(--linea);color:var(--tinta-suave);flex:none;
+}
+.ficha-cronometro .estado-cron.activo{color:var(--azul);border-color:var(--azul)}
+.ficha-cronometro .tiempo-cron{
+  font-family:"JetBrains Mono",monospace;font-size:32px;font-weight:500;letter-spacing:.02em;
+  text-align:center;padding:6px 0;
+}
+.ficha-cronometro .acciones-cron{display:flex;gap:8px;flex-wrap:wrap}
+.ficha-cronometro .acciones-cron .btn{flex:1;min-width:90px}
+
 /* Estilos para links */
 .enlace-nota{color:var(--azul);text-decoration:underline;cursor:pointer}
 .enlace-nota:hover{color:#1a1670}
@@ -491,6 +513,11 @@ footer.pie-pagina button:hover{color:var(--azul)}
       <button id="btnAbrirCalcDescuento" class="btn btn-chico" style="align-self:flex-start">Abrir calculadora</button>
     </div>
     <div class="tarjeta-herramienta">
+      <h3>⏱️ Cronómetros</h3>
+      <p>Varios a la vez, con título. Siguen la hora real aunque cierres el navegador.</p>
+      <button id="btnAbrirCronometros" class="btn btn-chico" style="align-self:flex-start">Abrir cronómetros</button>
+    </div>
+    <div class="tarjeta-herramienta">
       <h3>🤖 Asistente IA</h3>
       <p>Gemini 3.8 Flash — texto, imágenes y documentos. 5 consultas al día.</p>
       <button id="btnAbrirGemini" class="btn btn-chico" style="align-self:flex-start">Abrir asistente</button>
@@ -628,6 +655,26 @@ footer.pie-pagina button:hover{color:var(--azul)}
   </div>
 </div>
 
+<!-- ============ MODAL: CRONÓMETROS ============ -->
+<div id="modalCronometros" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Cronómetros</h2>
+      <button class="modal-close" id="cerrarCronometros" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="avisoCronometros" class="aviso oculto"></div>
+
+      <div class="form-nuevo-cron">
+        <input id="cronNuevoTitulo" type="text" placeholder="Título (ej: Pierna, Pomodoro, Hervir huevo…)">
+        <button id="btnCrearCronometro" class="btn btn-chico">Agregar</button>
+      </div>
+
+      <div id="listaCronometros" class="lista-cronometros"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ MODAL: POLÍTICA DE PRIVACIDAD ============ -->
 <div id="modalPrivacidad" class="modal-overlay oculto">
   <div class="modal">
@@ -647,11 +694,12 @@ footer.pie-pagina button:hover{color:var(--azul)}
           <li>Tu correo electrónico y, si entras con Google, el nombre y la foto asociados a esa cuenta.</li>
           <li>El contenido de las notas que escribes y los archivos (imágenes o documentos) que adjuntas a ellas.</li>
           <li>Los cálculos que guardas en las calculadoras de comisiones y descuento.</li>
+          <li>Los cronómetros que creas (título y tiempo acumulado).</li>
           <li>Los mensajes y archivos que envías al asistente de IA, y las respuestas que recibes.</li>
         </ul>
 
         <h3>3. Para qué usamos esos datos</h3>
-        <p>Únicamente para prestarte el servicio: guardar y mostrarte tus propias notas y cálculos, autenticarte, y hacer funcionar el asistente de IA. No usamos tus datos con fines publicitarios ni los vendemos a terceros.</p>
+        <p>Únicamente para prestarte el servicio: guardar y mostrarte tus propias notas, cálculos y cronómetros, autenticarte, y hacer funcionar el asistente de IA. No usamos tus datos con fines publicitarios ni los vendemos a terceros.</p>
 
         <h3>4. Con quién se comparten</h3>
         <p>Para operar Cajón usamos dos proveedores, que actúan como encargados del tratamiento y solo procesan tus datos para prestar su servicio técnico:</p>
@@ -661,7 +709,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
         </ul>
 
         <h3>5. Cuánto tiempo conservamos tus datos</h3>
-        <p>Mientras tu cuenta exista. Puedes borrar notas, cálculos o adjuntos individualmente cuando quieras, o pedir la eliminación completa de tu cuenta escribiendo a abulingo.help@gmail.com.</p>
+        <p>Mientras tu cuenta exista. Puedes borrar notas, cálculos, cronómetros o adjuntos individualmente cuando quieras, o pedir la eliminación completa de tu cuenta escribiendo a abulingo.help@gmail.com.</p>
 
         <h3>6. Seguridad</h3>
         <p>Las contraseñas se almacenan cifradas, la conexión viaja siempre por HTTPS, y cada usuario solo puede leer sus propios datos (reglas de seguridad a nivel de fila en la base de datos). Ningún sistema es 100% infalible; si detectamos un incidente de seguridad relevante, te lo notificaremos.</p>
@@ -691,7 +739,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
         <p class="fecha-doc">Última actualización: 6 de septiembre de 2026</p>
 
         <h3>1. Qué es Cajón</h3>
-        <p>Cajón es una aplicación personal de notas privadas, con calculadoras auxiliares de comisiones de bolsa y descuentos, y un asistente de inteligencia artificial experimental (Gemini 3.8 Flash).</p>
+        <p>Cajón es una aplicación personal de notas privadas, con calculadoras auxiliares de comisiones de bolsa y descuentos, cronómetros, y un asistente de inteligencia artificial experimental (Gemini 3.8 Flash).</p>
 
         <h3>2. El servicio es gratuito por ahora</h3>
         <p>Por el momento, usar Cajón no tiene ningún costo. No hay planes de pago, suscripciones ni compras activas. Si en el futuro se introdujera algún plan pago, se avisará con antelación razonable dentro de la aplicación, y no se realizará ningún cobro sin tu aceptación explícita.</p>
@@ -885,6 +933,7 @@ function cerrarEscritorio(){
   cerrarModal();
   cerrarCalcComisiones();
   cerrarCalcDescuento();
+  cerrarCronometros();
   cerrarGemini();
 }
 
@@ -1287,6 +1336,7 @@ document.addEventListener('keydown', (e) => {
     if (!$('modalNota').classList.contains('oculto')) cerrarModal();
     if (!$('modalCalcComisiones').classList.contains('oculto')) cerrarCalcComisiones();
     if (!$('modalCalcDescuento').classList.contains('oculto')) cerrarCalcDescuento();
+    if (!$('modalCronometros').classList.contains('oculto')) cerrarCronometros();
     if (!$('modalPrivacidad').classList.contains('oculto')) cerrarPrivacidad();
     if (!$('modalTerminos').classList.contains('oculto')) cerrarTerminos();
     if (!$('modalGemini').classList.contains('oculto')) cerrarGemini();
@@ -1692,6 +1742,156 @@ $('cdBtnLimpiar').onclick = () => {
   $('cdValor').value = '';
   $('resultadoCalcDescuento').classList.add('oculto');
 };
+
+/* =========================================================================
+   ==============================  CRONÓMETROS  =============================
+   Cada cronómetro guarda en la base de datos SEGUNDOS ACUMULADOS +
+   la MARCA DE TIEMPO en la que se puso a correr por última vez.
+   El tiempo mostrado se calcula siempre a partir de esa marca real
+   (segundos_acumulados + ahora - iniciado_en), así que sigue avanzando
+   correctamente aunque cierres la pestaña, el navegador o el celular:
+   al volver a abrir Cajón, el cronómetro retoma la hora real, no un
+   contador que se quedó corriendo solo en memoria.
+   ========================================================================= */
+
+let cronometros = [];
+let intervaloCronometros = null;
+
+function abrirCronometros(){
+  $('modalCronometros').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+  cargarCronometros();
+  if (!intervaloCronometros) intervaloCronometros = setInterval(actualizarTiemposCronometros, 1000);
+}
+function cerrarCronometros(){
+  $('modalCronometros').classList.add('oculto');
+  document.body.style.overflow = '';
+  clearInterval(intervaloCronometros);
+  intervaloCronometros = null;
+}
+$('btnAbrirCronometros').onclick = abrirCronometros;
+$('cerrarCronometros').onclick = cerrarCronometros;
+$('modalCronometros').addEventListener('click', e => { if (e.target === $('modalCronometros')) cerrarCronometros(); });
+
+function formatoDuracion(segundosTotales){
+  segundosTotales = Math.max(0, Math.floor(segundosTotales));
+  const h = Math.floor(segundosTotales / 3600);
+  const m = Math.floor((segundosTotales % 3600) / 60);
+  const s = segundosTotales % 60;
+  return [h, m, s].map(n => String(n).padStart(2, '0')).join(':');
+}
+
+// Tiempo real transcurrido de un cronómetro, calculado a partir de la marca de tiempo guardada
+function segundosTranscurridos(c){
+  const base = Number(c.segundos_acumulados) || 0;
+  if (c.corriendo && c.iniciado_en){
+    return base + (Date.now() - new Date(c.iniciado_en).getTime()) / 1000;
+  }
+  return base;
+}
+
+async function cargarCronometros(){
+  const { data, error } = await sb
+    .from('cronometros')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error){ aviso($('avisoCronometros'), 'No se pudieron cargar tus cronómetros: ' + error.message); return; }
+  aviso($('avisoCronometros'), '');
+  cronometros = data || [];
+  pintarCronometros();
+}
+
+function pintarCronometros(){
+  const cont = $('listaCronometros');
+  cont.innerHTML = '';
+
+  if (cronometros.length === 0){
+    const vacio = document.createElement('div');
+    vacio.className = 'vacio';
+    vacio.textContent = 'Todavía no tienes cronómetros. Ponle un título arriba y dale a "Agregar".';
+    cont.appendChild(vacio);
+    return;
+  }
+
+  cronometros.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'ficha-cronometro';
+    div.setAttribute('data-cron-id', c.id);
+    const yaEmpezado = (Number(c.segundos_acumulados) || 0) > 0 || c.corriendo;
+    div.innerHTML = `
+      <div class="cab-cron">
+        <span class="titulo-cron">${c.titulo}</span>
+        <span class="estado-cron ${c.corriendo ? 'activo' : ''}">${c.corriendo ? 'corriendo' : 'pausado'}</span>
+      </div>
+      <div class="tiempo-cron" data-tiempo>${formatoDuracion(segundosTranscurridos(c))}</div>
+      <div class="acciones-cron">
+        <button class="btn btn-chico" data-toggle>${c.corriendo ? 'Pausar' : (yaEmpezado ? 'Continuar' : 'Iniciar')}</button>
+        <button class="btn btn-fantasma btn-chico" data-reiniciar>Reiniciar</button>
+        <button class="btn btn-fantasma btn-chico" data-borrar style="color:var(--alerta);border-color:var(--alerta)">Borrar</button>
+      </div>
+    `;
+    div.querySelector('[data-toggle]').onclick = () => alternarCronometro(c);
+    div.querySelector('[data-reiniciar]').onclick = () => reiniciarCronometro(c);
+    div.querySelector('[data-borrar]').onclick = () => borrarCronometro(c.id);
+    cont.appendChild(div);
+  });
+}
+
+// Cada segundo, mientras el modal está abierto, refresca solo el texto de los que corren
+// (sin volver a pedirle nada a Supabase) para que se vean avanzar en vivo.
+function actualizarTiemposCronometros(){
+  if ($('modalCronometros').classList.contains('oculto')) return;
+  cronometros.forEach(c => {
+    if (!c.corriendo) return;
+    const el = document.querySelector(`[data-cron-id="${c.id}"] [data-tiempo]`);
+    if (el) el.textContent = formatoDuracion(segundosTranscurridos(c));
+  });
+}
+
+async function alternarCronometro(c){
+  const cambios = c.corriendo
+    // Pausar: congela lo transcurrido en segundos_acumulados y suelta la marca de tiempo
+    ? { corriendo: false, segundos_acumulados: segundosTranscurridos(c), iniciado_en: null }
+    // Iniciar / continuar: guarda la hora real de arranque
+    : { corriendo: true, iniciado_en: new Date().toISOString() };
+
+  const { error } = await sb.from('cronometros').update(cambios).eq('id', c.id);
+  if (error){ mostrarToast('No se pudo actualizar el cronómetro: ' + error.message); return; }
+  cargarCronometros();
+}
+
+async function reiniciarCronometro(c){
+  if (!confirm('¿Reiniciar este cronómetro a cero?')) return;
+  const { error } = await sb.from('cronometros')
+    .update({ corriendo: false, segundos_acumulados: 0, iniciado_en: null })
+    .eq('id', c.id);
+  if (error){ mostrarToast('No se pudo reiniciar: ' + error.message); return; }
+  cargarCronometros();
+}
+
+async function borrarCronometro(id){
+  if (!confirm('¿Borrar este cronómetro? No se puede deshacer.')) return;
+  const { error } = await sb.from('cronometros').delete().eq('id', id);
+  if (error){ mostrarToast('No se pudo borrar: ' + error.message); return; }
+  mostrarToast('Cronómetro eliminado');
+  cargarCronometros();
+}
+
+$('btnCrearCronometro').onclick = async () => {
+  const titulo = $('cronNuevoTitulo').value.trim();
+  if (!titulo) return aviso($('avisoCronometros'), 'Ponle un título al cronómetro.');
+  aviso($('avisoCronometros'), '');
+  $('btnCrearCronometro').disabled = true;
+  const { error } = await sb.from('cronometros').insert({ titulo, segundos_acumulados: 0, corriendo: false });
+  $('btnCrearCronometro').disabled = false;
+  if (error){ aviso($('avisoCronometros'), 'No se pudo crear: ' + error.message); return; }
+  $('cronNuevoTitulo').value = '';
+  cargarCronometros();
+};
+$('cronNuevoTitulo').addEventListener('keydown', e => {
+  if (e.key === 'Enter') $('btnCrearCronometro').click();
+});
 
 /* =========================================================================
    =========================  ASISTENTE IA (GEMINI)  =======================
