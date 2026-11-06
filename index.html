@@ -1006,9 +1006,10 @@ async function guardar(){
   let error = null;
 
   if (editandoId){
-    ({ error } = await sb.from('notas').update({ titulo, contenido }).eq('id', editandoId));
+    const resp = await sb.from('notas').update({ titulo, contenido }).eq('id', editandoId).select('id');
+    error = resp.error || (!resp.data?.length ? { message: 'la base de datos no aceptó el cambio (permiso o sesión vencida). Recarga la página e inténtalo de nuevo.' } : null);
   } else {
-    const resp = await sb.from('notas').insert({ titulo, contenido }).select('id').single();
+    const resp = await sb.from('notas').insert({ titulo, contenido, user_id: usuarioActual.id }).select('id').single();
     error = resp.error;
     notaId = resp.data?.id || null;
   }
@@ -1067,7 +1068,8 @@ async function subirAdjuntosPendientes(notaId){
       continue;
     }
 
-    await sb.from('notas_adjuntos').insert({
+    const { error: errorAdj } = await sb.from('notas_adjuntos').insert({
+      user_id: usuarioActual.id,
       nota_id: notaId,
       ruta_storage: ruta,
       nombre_original: archivo.name,
@@ -1075,6 +1077,7 @@ async function subirAdjuntosPendientes(notaId){
       mime_type: archivo.type || null,
       tamano_bytes: archivo.size,
     });
+    if (errorAdj) mostrarToast(`No se pudo registrar "${archivo.name}": ` + errorAdj.message);
   }
   archivosPendientesNota = [];
 }
@@ -1285,9 +1288,10 @@ function activarEdicionModal(nota) {
       return;
     }
     
-    const { error } = await sb.from('notas')
+    const { data: filas, error: errUpd } = await sb.from('notas')
       .update({ titulo: nuevoTitulo, contenido: nuevoContenido })
-      .eq('id', nota.id);
+      .eq('id', nota.id).select('id');
+    const error = errUpd || (!filas?.length ? { message: 'la base de datos no aceptó el cambio (permiso o sesión vencida). Recarga la página e inténtalo de nuevo.' } : null);
     
     if (error) {
       mostrarToast('No se pudo guardar: ' + error.message);
@@ -1695,7 +1699,7 @@ $('ccBtnGuardar').onclick = async () => {
 
   const { error } = calculoEditandoId
     ? await sb.from('calculos_comisiones').update(registro).eq('id', calculoEditandoId)
-    : await sb.from('calculos_comisiones').insert(registro);
+    : await sb.from('calculos_comisiones').insert({ ...registro, user_id: usuarioActual.id });
 
   $('ccBtnGuardar').disabled = false;
   if (error){ mostrarToast('No se pudo guardar: ' + error.message); return; }
