@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cajón — notas privadas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -541,8 +544,8 @@ footer.pie-pagina button:hover{color:var(--azul)}
   </div>
 
   <section class="editor">
-    <input id="titulo" type="text" placeholder="Título de la nota">
-    <textarea id="contenido" placeholder="Escribe aquí…"></textarea>
+    <input id="titulo" type="text" placeholder="Título de la nota" autocomplete="off">
+    <textarea id="contenido" placeholder="Escribe aquí…" autocomplete="off"></textarea>
 
     <input type="file" id="inputAdjuntosNota" multiple accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx" class="oculto">
     <button type="button" class="btn-adjuntar" id="btnAdjuntarNota">📎 Adjuntar imágenes o documentos</button>
@@ -873,7 +876,25 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
   /* La anon key es pública por diseño: quien protege los datos es el RLS del SQL. */
 
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Todo se pide siempre a Supabase, sin usar la caché del navegador
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  global: { fetch: (url, opts = {}) => fetch(url, { ...opts, cache: 'no-store' }) },
+});
+
+// Preferencias (mensaje de contactos, modelo y nivel de Gemini) guardadas en la cuenta de Supabase
+function prefCuenta(clave){ return usuarioActual?.user_metadata?.[clave]; }
+const prefPendientes = {};
+let prefTimer = null;
+function guardarPrefCuenta(clave, valor){
+  prefPendientes[clave] = valor;
+  clearTimeout(prefTimer);
+  prefTimer = setTimeout(async () => {
+    const datos = { ...prefPendientes };
+    Object.keys(prefPendientes).forEach(k => delete prefPendientes[k]);
+    const { data, error } = await sb.auth.updateUser({ data: datos });
+    if (!error && data?.user) usuarioActual = data.user;
+  }, 800);
+}
 
 /* URL de las Edge Functions de este mismo proyecto Supabase */
 const FUNCIONES_URL = SUPABASE_URL + '/functions/v1';
@@ -997,7 +1018,9 @@ function cerrarEscritorio(){
 }
 
 /* ---------- notas ---------- */
+let cargaNotasN = 0;
 async function cargarNotas(){
+  const miCarga = ++cargaNotasN;   // si llega una respuesta vieja después de una nueva, se ignora
   const { data, error } = await sb
     .from('notas')
     .select('id, titulo, contenido, updated_at')
@@ -1005,10 +1028,22 @@ async function cargarNotas(){
 
   if (error){ aviso($('avisoApp'), 'No se pudieron cargar las notas: ' + error.message); return; }
   aviso($('avisoApp'), '');
+  if (miCarga !== cargaNotasN) return;
   notas = data;
   await cargarAdjuntosDeNotas(notas.map(n => n.id));
+  if (miCarga !== cargaNotasN) return;
   pintar();
 }
+
+// Al volver a la pestaña o al regresar con "atrás", se vuelve a leer de Supabase
+function refrescarDesdeSupabase(){
+  if (!usuarioActual) return;
+  cargarNotas();
+  if (!$('modalContactos').classList.contains('oculto')) cargarContactos();
+  if (!$('modalCronometros').classList.contains('oculto')) cargarCronometros();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refrescarDesdeSupabase(); });
+window.addEventListener('pageshow', e => { if (e.persisted) refrescarDesdeSupabase(); });
 
 async function cargarAdjuntosDeNotas(idsNotas){
   adjuntosPorNota = {};
@@ -1166,16 +1201,26 @@ function limpiarEditor(){
   renderAdjuntosEditor();
 }
 
-async function borrar(id){
-  if (!confirm('¿Borrar esta nota? No se puede deshacer.')) return;
+async function borrar(id, yaConfirmado = false){
+  if (!yaConfirmado && !confirm('¿Borrar esta nota? No se puede deshacer.')) return;
 
   const adjuntos = adjuntosPorNota[id] || [];
+
+  // Se borra en Supabase y se comprueba que de verdad se borró una fila
+  const { data, error } = await sb.from('notas').delete().eq('id', id).select('id');
+  if (error) return aviso($('avisoApp'), 'No se borró: ' + error.message);
+  if (!data?.length){
+    aviso($('avisoApp'), 'No se borró: la base de datos no aceptó el borrado (sesión vencida o permiso). Recarga la página e inténtalo de nuevo.');
+    cargarNotas();
+    return;
+  }
+
+  // Quitarla ya de la pantalla y luego sus archivos del almacenamiento
+  notas = notas.filter(n => n.id !== id);
+  pintar();
   if (adjuntos.length > 0){
     await sb.storage.from(BUCKET_ADJUNTOS).remove(adjuntos.map(a => a.ruta_storage));
   }
-
-  const { error } = await sb.from('notas').delete().eq('id', id);
-  if (error) return aviso($('avisoApp'), 'No se borró: ' + error.message);
   if (editandoId === id) limpiarEditor();
   cargarNotas();
   mostrarToast('Nota eliminada');
@@ -1309,7 +1354,7 @@ function abrirModal(id) {
   
   document.getElementById('modalBtnBorrar').onclick = () => {
     if (confirm('¿Borrar esta nota? No se puede deshacer.')) {
-      borrar(nota.id);
+      borrar(nota.id, true);
       cerrarModal();
     }
   };
@@ -2042,12 +2087,8 @@ $('modalGemini').addEventListener('click', e => { if (e.target === $('modalGemin
 
 const nombreModeloGemini = id => id.replace(/^gemini-/, 'Gemini ').replace(/-/g, ' ')
   .replace(/\b(flash|pro|lite|argon|preview)\b/gi, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
-try {
-  const guardado = JSON.parse(localStorage.getItem('cajon-gemini-ajustes') || '{}');
-  if (guardado.nivel) $('geminiNivel').value = guardado.nivel;
-} catch(e) {}
 function guardarAjustesGemini(){
-  try { localStorage.setItem('cajon-gemini-ajustes', JSON.stringify({ modelo: $('geminiModelo').value, nivel: $('geminiNivel').value })); } catch(e) {}
+  guardarPrefCuenta('gemini_ajustes', { modelo: $('geminiModelo').value, nivel: $('geminiNivel').value });
 }
 $('geminiModelo').onchange = guardarAjustesGemini;
 $('geminiNivel').onchange = guardarAjustesGemini;
@@ -2063,8 +2104,8 @@ async function cargarModelosGemini(){
     });
     const datos = await resp.json();
     if (!resp.ok || !Array.isArray(datos.modelos)) return;
-    let guardado = {};
-    try { guardado = JSON.parse(localStorage.getItem('cajon-gemini-ajustes') || '{}'); } catch(e) {}
+    const guardado = prefCuenta('gemini_ajustes') || {};
+    if (guardado.nivel) $('geminiNivel').value = guardado.nivel;
     $('geminiModelo').innerHTML = datos.modelos.map(m => `<option value="${m}">${nombreModeloGemini(m)}</option>`).join('');
     if (guardado.modelo && datos.modelos.includes(guardado.modelo)) $('geminiModelo').value = guardado.modelo;
   } catch(e) {}
@@ -2249,7 +2290,6 @@ let ctEditandoId = null;
 const ctEnviados = new Set();   // ids a los que ya se abrió el mensaje en esta sesión
 
 const ctEsc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ctClaveMensaje = () => 'cajon-ct-mensaje-' + (usuarioActual?.id || '');
 
 // Deja solo dígitos; un celular colombiano de 10 dígitos recibe el indicativo 57
 function ctNumeroWhatsApp(numero){
@@ -2271,7 +2311,7 @@ function ctEnviar(c){
 function abrirContactos(){
   $('modalContactos').classList.remove('oculto');
   document.body.style.overflow = 'hidden';
-  try { $('ctMensaje').value = localStorage.getItem(ctClaveMensaje()) || ''; } catch(e) {}
+  $('ctMensaje').value = prefCuenta('contactos_mensaje') || '';
   cargarContactos();
 }
 function cerrarContactos(){
@@ -2282,7 +2322,7 @@ function cerrarContactos(){
 $('btnAbrirContactos').onclick = abrirContactos;
 $('cerrarContactos').onclick = cerrarContactos;
 $('modalContactos').addEventListener('click', e => { if (e.target === $('modalContactos')) cerrarContactos(); });
-$('ctMensaje').addEventListener('input', () => { try { localStorage.setItem(ctClaveMensaje(), $('ctMensaje').value); } catch(e) {} });
+$('ctMensaje').addEventListener('input', () => guardarPrefCuenta('contactos_mensaje', $('ctMensaje').value));
 
 $('ctBtnInsertarNombre').onclick = () => {
   const t = $('ctMensaje'), i = t.selectionStart ?? t.value.length;
