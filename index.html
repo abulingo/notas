@@ -178,6 +178,20 @@ header.barra h1{font-size:26px;margin:0}
 .ficha-calculo .ganancia.negativa{color:var(--alerta);font-weight:700}
 .ficha-calculo .acciones{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}
 
+/* ---------- contactos ---------- */
+.ct-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:12px}
+@media (max-width:640px){.ct-form{grid-template-columns:1fr}}
+.ct-contador{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.ct-contador span{border:1px solid var(--linea);border-radius:999px;padding:3px 10px;font-size:13px}
+.ct-mensaje textarea{width:100%;min-height:80px;box-sizing:border-box}
+.ct-barra{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 14px}
+.ct-lista{display:flex;flex-direction:column;gap:8px}
+.ct-ficha{border:1px solid var(--linea);border-radius:8px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ct-ficha .ct-datos{flex:1;min-width:160px;word-break:break-word}
+.ct-ficha .ct-num{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--tinta-suave)}
+.ct-etq{display:inline-block;font-size:12px;border:1px solid var(--azul);color:var(--azul);border-radius:999px;padding:0 8px;margin-left:6px}
+.ct-ficha.enviado{opacity:.6}
+
 /* ---------- cronómetros ---------- */
 .form-nuevo-cron{display:flex;gap:8px;margin-bottom:18px}
 .form-nuevo-cron input{flex:1}
@@ -517,6 +531,10 @@ footer.pie-pagina button:hover{color:var(--azul)}
       <button id="btnAbrirCronometros" class="btn btn-chico" style="align-self:flex-start">Abrir cronómetros</button>
     </div>
     <div class="tarjeta-herramienta">
+      <h3>📇 Contactos</h3>
+      <button id="btnAbrirContactos" class="btn btn-chico" style="align-self:flex-start">Abrir contactos</button>
+    </div>
+    <div class="tarjeta-herramienta">
       <h3>🤖 Asistente IA</h3>
       <button id="btnAbrirGemini" class="btn btn-chico" style="align-self:flex-start">Abrir asistente</button>
     </div>
@@ -649,6 +667,42 @@ footer.pie-pagina button:hover{color:var(--azul)}
     </div>
     <div class="modal-footer">
       <button class="btn btn-fantasma" id="cdBtnLimpiar">Limpiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CONTACTOS ============ -->
+<div id="modalContactos" class="modal-overlay oculto">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Contactos</h2>
+      <button class="modal-close" id="cerrarContactos" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="avisoContactos" class="aviso oculto"></div>
+
+      <div class="ct-mensaje">
+        <label for="ctMensaje"><strong>Mensaje para todos</strong> — usa {nombre} donde quieras que vaya el nombre de cada contacto</label>
+        <textarea id="ctMensaje" placeholder="Hola {nombre}, te escribo para…"></textarea>
+        <div class="ct-barra">
+          <button type="button" id="ctBtnInsertarNombre" class="btn btn-fantasma btn-chico">+ Insertar {nombre}</button>
+          <select id="ctFiltro" title="Enviar solo a una etiqueta"></select>
+          <button type="button" id="ctBtnEnviarTodos" class="btn btn-chico">📤 Enviar a todos</button>
+          <button type="button" id="ctBtnReiniciar" class="btn btn-fantasma btn-chico">Reiniciar envíos</button>
+        </div>
+      </div>
+
+      <div class="ct-contador" id="ctContador"></div>
+
+      <div class="ct-form">
+        <input id="ctNombre" type="text" placeholder="Nombre">
+        <input id="ctNumero" type="tel" placeholder="Número (ej: 3001234567)">
+        <input id="ctEtiqueta" type="text" placeholder="Etiqueta (ej: Clientes)" list="ctEtiquetas">
+        <datalist id="ctEtiquetas"></datalist>
+        <button id="ctBtnGuardar" class="btn btn-chico">Agregar</button>
+      </div>
+
+      <div id="ctLista" class="ct-lista"></div>
     </div>
   </div>
 </div>
@@ -932,6 +986,7 @@ function cerrarEscritorio(){
   cerrarCalcComisiones();
   cerrarCalcDescuento();
   cerrarCronometros();
+  cerrarContactos();
   cerrarGemini();
 }
 
@@ -1339,6 +1394,7 @@ document.addEventListener('keydown', (e) => {
     if (!$('modalCalcComisiones').classList.contains('oculto')) cerrarCalcComisiones();
     if (!$('modalCalcDescuento').classList.contains('oculto')) cerrarCalcDescuento();
     if (!$('modalCronometros').classList.contains('oculto')) cerrarCronometros();
+    if (!$('modalContactos').classList.contains('oculto')) cerrarContactos();
     if (!$('modalPrivacidad').classList.contains('oculto')) cerrarPrivacidad();
     if (!$('modalTerminos').classList.contains('oculto')) cerrarTerminos();
     if (!$('modalGemini').classList.contains('oculto')) cerrarGemini();
@@ -2145,6 +2201,160 @@ async function enviarMensajeGemini(){
   $('geminiTexto').disabled = false;
   $('geminiBtnEnviar').disabled = false;
   $('geminiTexto').focus();
+}
+
+/* =========================================================================
+   ==============================  CONTACTOS  ==============================
+   ========================================================================= */
+let contactos = [];
+let ctEditandoId = null;
+const ctEnviados = new Set();   // ids a los que ya se abrió el mensaje en esta sesión
+
+const ctEsc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ctClaveMensaje = () => 'cajon-ct-mensaje-' + (usuarioActual?.id || '');
+
+// Deja solo dígitos; un celular colombiano de 10 dígitos recibe el indicativo 57
+function ctNumeroWhatsApp(numero){
+  let d = String(numero || '').replace(/\D/g, '');
+  if (d.length === 10 && d.startsWith('3')) d = '57' + d;
+  return d;
+}
+function ctMensajePara(c){
+  return ($('ctMensaje').value || '').replace(/\{nombre\}/gi, c.nombre || '');
+}
+function ctEnviar(c){
+  const num = ctNumeroWhatsApp(c.numero);
+  if (!num) { mostrarToast('Ese contacto no tiene un número válido'); return; }
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(ctMensajePara(c))}`, '_blank');
+  ctEnviados.add(c.id);
+  pintarContactos();
+}
+
+function abrirContactos(){
+  $('modalContactos').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+  try { $('ctMensaje').value = localStorage.getItem(ctClaveMensaje()) || ''; } catch(e) {}
+  cargarContactos();
+}
+function cerrarContactos(){
+  $('modalContactos').classList.add('oculto');
+  document.body.style.overflow = '';
+  ctLimpiarForm();
+}
+$('btnAbrirContactos').onclick = abrirContactos;
+$('cerrarContactos').onclick = cerrarContactos;
+$('modalContactos').addEventListener('click', e => { if (e.target === $('modalContactos')) cerrarContactos(); });
+$('ctMensaje').addEventListener('input', () => { try { localStorage.setItem(ctClaveMensaje(), $('ctMensaje').value); } catch(e) {} });
+
+$('ctBtnInsertarNombre').onclick = () => {
+  const t = $('ctMensaje'), i = t.selectionStart ?? t.value.length;
+  t.value = t.value.slice(0, i) + '{nombre}' + t.value.slice(t.selectionEnd ?? i);
+  t.focus(); t.selectionStart = t.selectionEnd = i + 8;
+  t.dispatchEvent(new Event('input'));
+};
+
+async function cargarContactos(){
+  const { data, error } = await sb.from('contactos').select('*').order('nombre', { ascending: true });
+  if (error){
+    aviso($('avisoContactos'), 'No se pudieron cargar los contactos: ' + error.message);
+    return;
+  }
+  aviso($('avisoContactos'), '');
+  contactos = data || [];
+  pintarContactos();
+}
+
+function ctFiltrados(){
+  const f = $('ctFiltro').value;
+  return f ? contactos.filter(c => (c.etiqueta || '') === f) : contactos;
+}
+
+function pintarContactos(){
+  const etiquetas = [...new Set(contactos.map(c => c.etiqueta).filter(Boolean))].sort();
+  const filtroActual = $('ctFiltro').value;
+  $('ctFiltro').innerHTML = `<option value="">Todas las etiquetas</option>` +
+    etiquetas.map(e => `<option value="${ctEsc(e)}">${ctEsc(e)}</option>`).join('');
+  $('ctFiltro').value = etiquetas.includes(filtroActual) ? filtroActual : '';
+  $('ctEtiquetas').innerHTML = etiquetas.map(e => `<option value="${ctEsc(e)}">`).join('');
+
+  const lista = ctFiltrados();
+  const enviados = lista.filter(c => ctEnviados.has(c.id)).length;
+  $('ctContador').innerHTML =
+    `<span>👥 ${contactos.length} contacto${contactos.length === 1 ? '' : 's'}</span>` +
+    ($('ctFiltro').value ? `<span>🏷️ ${lista.length} en "${ctEsc($('ctFiltro').value)}"</span>` : '') +
+    `<span>✅ ${enviados} de ${lista.length} enviados</span>`;
+  const pendientes = lista.length - enviados;
+  $('ctBtnEnviarTodos').textContent = pendientes > 0 ? `📤 Enviar a todos (faltan ${pendientes})` : '📤 Enviar a todos';
+
+  const cont = $('ctLista');
+  if (!contactos.length){ cont.innerHTML = '<p style="color:var(--tinta-suave)">Aún no tienes contactos.</p>'; return; }
+  cont.innerHTML = '';
+  lista.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'ct-ficha' + (ctEnviados.has(c.id) ? ' enviado' : '');
+    div.innerHTML = `<div class="ct-datos"><strong>${ctEsc(c.nombre)}</strong>${c.etiqueta ? `<span class="ct-etq">${ctEsc(c.etiqueta)}</span>` : ''}${ctEnviados.has(c.id) ? ' ✅' : ''}<div class="ct-num">${ctEsc(c.numero)}</div></div>`;
+    const bEnv = document.createElement('button'); bEnv.className = 'btn btn-chico'; bEnv.textContent = 'Enviar'; bEnv.onclick = () => ctEnviar(c);
+    const bEd = document.createElement('button'); bEd.className = 'btn btn-fantasma btn-chico'; bEd.textContent = 'Editar'; bEd.onclick = () => ctEditar(c);
+    const bBo = document.createElement('button'); bBo.className = 'btn btn-fantasma btn-chico'; bBo.textContent = 'Borrar'; bBo.onclick = () => ctBorrar(c);
+    div.append(bEnv, bEd, bBo);
+    cont.appendChild(div);
+  });
+}
+$('ctFiltro').onchange = pintarContactos;
+
+// Los navegadores bloquean abrir muchas ventanas a la vez, así que cada clic abre el siguiente pendiente
+$('ctBtnEnviarTodos').onclick = () => {
+  if (!$('ctMensaje').value.trim()) { aviso($('avisoContactos'), 'Escribe primero el mensaje para todos.'); return; }
+  aviso($('avisoContactos'), '');
+  const sig = ctFiltrados().find(c => !ctEnviados.has(c.id));
+  if (!sig) { mostrarToast('Ya se envió a todos. Usa "Reiniciar envíos" para empezar otra vez.'); return; }
+  ctEnviar(sig);
+};
+$('ctBtnReiniciar').onclick = () => { ctEnviados.clear(); pintarContactos(); };
+
+function ctEditar(c){
+  ctEditandoId = c.id;
+  $('ctNombre').value = c.nombre || '';
+  $('ctNumero').value = c.numero || '';
+  $('ctEtiqueta').value = c.etiqueta || '';
+  $('ctBtnGuardar').textContent = 'Guardar';
+  $('ctNombre').focus();
+}
+function ctLimpiarForm(){
+  ctEditandoId = null;
+  $('ctNombre').value = ''; $('ctNumero').value = ''; $('ctEtiqueta').value = '';
+  $('ctBtnGuardar').textContent = 'Agregar';
+}
+
+$('ctBtnGuardar').onclick = async () => {
+  const registro = {
+    nombre: $('ctNombre').value.trim(),
+    numero: $('ctNumero').value.trim(),
+    etiqueta: $('ctEtiqueta').value.trim() || null,
+  };
+  if (!registro.nombre || !registro.numero) { aviso($('avisoContactos'), 'Escribe al menos el nombre y el número.'); return; }
+  aviso($('avisoContactos'), '');
+  $('ctBtnGuardar').disabled = true;
+  const resp = ctEditandoId
+    ? await sb.from('contactos').update(registro).eq('id', ctEditandoId).select('id')
+    : await sb.from('contactos').insert({ ...registro, user_id: usuarioActual.id }).select('id');
+  $('ctBtnGuardar').disabled = false;
+  const error = resp.error || (!resp.data?.length ? { message: 'la base de datos no aceptó el cambio.' } : null);
+  if (error) { aviso($('avisoContactos'), 'No se guardó: ' + error.message); return; }
+  mostrarToast(ctEditandoId ? 'Contacto actualizado' : 'Contacto agregado');
+  ctLimpiarForm();
+  cargarContactos();
+};
+['ctNombre','ctNumero','ctEtiqueta'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('ctBtnGuardar').click(); }));
+
+async function ctBorrar(c){
+  if (!confirm(`¿Borrar a ${c.nombre}?`)) return;
+  const { error } = await sb.from('contactos').delete().eq('id', c.id);
+  if (error) { mostrarToast('No se borró: ' + error.message); return; }
+  ctEnviados.delete(c.id);
+  if (ctEditandoId === c.id) ctLimpiarForm();
+  mostrarToast('Contacto eliminado');
+  cargarContactos();
 }
 </script>
 </body>
