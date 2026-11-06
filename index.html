@@ -834,12 +834,18 @@ footer.pie-pagina button:hover{color:var(--azul)}
 <div id="modalGemini" class="modal-overlay oculto">
   <div class="modal modal-expandido">
     <div class="modal-header">
-      <h2>Asistente IA — Gemini 3.8 Flash</h2>
+      <h2>Asistente IA — Gemini</h2>
       <button class="modal-close" id="cerrarGemini" title="Cerrar">✕</button>
     </div>
     <div class="modal-body">
       <div class="chat-caja">
         <div class="chat-cuota" id="geminiCuota">Cargando cuota…</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0">
+          <label style="font-size:13px">Modelo <select id="geminiModelo"><option value="gemini-3.8-flash">Gemini 3.8 Flash</option></select></label>
+          <label style="font-size:13px">Nivel <select id="geminiNivel">
+            <option value="MINIMAL">Mínimo</option><option value="LOW" selected>Bajo</option>
+            <option value="MEDIUM">Medio</option><option value="HIGH">Alto</option></select></label>
+        </div>
         <div id="avisoGemini" class="aviso oculto"></div>
         <div class="chat-mensajes" id="geminiMensajes"></div>
         <div class="chat-archivos-pendientes" id="geminiArchivosPendientes"></div>
@@ -2023,6 +2029,7 @@ function abrirGemini(){
   document.body.style.overflow = 'hidden';
   cargarHistorialGemini();
   cargarCuotaGemini();
+  cargarModelosGemini();
   setTimeout(() => $('geminiTexto').focus(), 50);
 }
 function cerrarGemini(){
@@ -2032,6 +2039,36 @@ function cerrarGemini(){
 $('btnAbrirGemini').onclick = abrirGemini;
 $('cerrarGemini').onclick = cerrarGemini;
 $('modalGemini').addEventListener('click', e => { if (e.target === $('modalGemini')) cerrarGemini(); });
+
+const nombreModeloGemini = id => id.replace(/^gemini-/, 'Gemini ').replace(/-/g, ' ')
+  .replace(/\b(flash|pro|lite|argon|preview)\b/gi, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+try {
+  const guardado = JSON.parse(localStorage.getItem('cajon-gemini-ajustes') || '{}');
+  if (guardado.nivel) $('geminiNivel').value = guardado.nivel;
+} catch(e) {}
+function guardarAjustesGemini(){
+  try { localStorage.setItem('cajon-gemini-ajustes', JSON.stringify({ modelo: $('geminiModelo').value, nivel: $('geminiNivel').value })); } catch(e) {}
+}
+$('geminiModelo').onchange = guardarAjustesGemini;
+$('geminiNivel').onchange = guardarAjustesGemini;
+
+// Pide a la función la lista de modelos permitidos (incluye Gemini Argon si Vertex lo ofrece)
+async function cargarModelosGemini(){
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch(`${FUNCIONES_URL}/gemini-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ accion: 'modelos' }),
+    });
+    const datos = await resp.json();
+    if (!resp.ok || !Array.isArray(datos.modelos)) return;
+    let guardado = {};
+    try { guardado = JSON.parse(localStorage.getItem('cajon-gemini-ajustes') || '{}'); } catch(e) {}
+    $('geminiModelo').innerHTML = datos.modelos.map(m => `<option value="${m}">${nombreModeloGemini(m)}</option>`).join('');
+    if (guardado.modelo && datos.modelos.includes(guardado.modelo)) $('geminiModelo').value = guardado.modelo;
+  } catch(e) {}
+}
 
 async function cargarHistorialGemini(){
   const { data, error } = await sb
@@ -2174,7 +2211,8 @@ async function enviarMensajeGemini(){
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ mensaje: texto, archivos: archivosPendientesGemini }),
+      body: JSON.stringify({ mensaje: texto, archivos: archivosPendientesGemini,
+        modelo: $('geminiModelo').value, nivel: $('geminiNivel').value }),
     });
     const datos = await resp.json();
 
