@@ -474,6 +474,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
     </div>
 
     <div id="avisoAuth" class="aviso oculto"></div>
+    <button type="button" class="btn btn-fantasma btn-chico btn-limpiar-cache" style="margin-top:8px">🧹 Limpiar caché de esta web</button>
 
     <label class="campo"><span>Correo</span>
       <input id="correo" type="email" autocomplete="email" placeholder="tu@correo.com">
@@ -513,6 +514,7 @@ footer.pie-pagina button:hover{color:var(--azul)}
     </div>
     <div class="sesion">
       <span class="quien" id="quien"></span>
+      <button type="button" class="btn btn-fantasma btn-limpiar-cache" title="Borra la caché y los datos guardados de esta web en el navegador">🧹 Limpiar caché</button>
       <button id="btnSalir" class="btn btn-fantasma">Cerrar sesión</button>
     </div>
   </header>
@@ -976,6 +978,32 @@ $('btnAuth').onclick = async () => {
 };
 
 $('btnSalir').onclick = async () => { await sb.auth.signOut(); };
+
+// Borra todo lo que esta web guardó en el navegador (sesión, almacenamiento,
+// caché, service workers) y recarga la página nueva desde el servidor.
+async function limpiarCacheWeb(){
+  if (!confirm('Se borrará la caché y los datos guardados de esta web en este navegador y tendrás que volver a iniciar sesión. Tus notas en Supabase no se tocan. ¿Continuar?')) return;
+  try { await sb.auth.signOut({ scope: 'local' }); } catch(e) {}
+  try { localStorage.clear(); } catch(e) {}
+  try { sessionStorage.clear(); } catch(e) {}
+  try {
+    if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+  } catch(e) {}
+  try {
+    if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  } catch(e) {}
+  try {
+    if (indexedDB.databases) for (const db of await indexedDB.databases()) if (db.name) indexedDB.deleteDatabase(db.name);
+  } catch(e) {}
+  try {
+    document.cookie.split(';').forEach(c => {
+      const n = c.split('=')[0].trim();
+      if (n) document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    });
+  } catch(e) {}
+  location.replace(location.pathname + '?limpio=' + Date.now());
+}
+document.querySelectorAll('.btn-limpiar-cache').forEach(b => b.onclick = limpiarCacheWeb);
 
 $('btnGoogle').onclick = async () => {
   const { error } = await sb.auth.signInWithOAuth({
